@@ -1,0 +1,12 @@
+package xw32_wb7.game.msg;
+
+import java.io.Serializable;
+
+public interface IUpdateTeamMsg extends Serializable {
+	
+	public int getScore();
+	
+	public double getLatitude();
+	
+	public double getLongtitude();
+}

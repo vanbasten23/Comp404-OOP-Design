@@ -1,0 +1,29 @@
+package xw32_wb7.server.model;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class GameManager {
+	
+	Map<String, Integer> scores;
+	
+	public GameManager(){
+		scores = new HashMap<String, Integer>();
+	}
+	
+	public void addTeam(String teamName){
+		scores.put(teamName, 0);
+	}
+	
+	public void addScore2Team(String teamName, int price, int time){
+		int curScore = scores.get(teamName);
+		int priceScore = 1000 - price;
+		int timeScore = (10 - time) * 100;
+		
+		int addedScore = priceScore + timeScore;
+		curScore += addedScore;
+		scores.replace(teamName, curScore);
+	}
+	
+	
+}

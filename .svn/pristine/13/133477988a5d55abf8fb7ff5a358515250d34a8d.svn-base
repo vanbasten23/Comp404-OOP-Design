@@ -1,0 +1,85 @@
+package xw32_wb7.chatroom.cmd;
+
+import java.util.UUID;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.ADataPacketAlgoCmd;
+import provided.datapacket.DataPacket;
+import provided.mixedData.IMixedDataDictionary;
+import provided.mixedData.MixedDataKey;
+import xw32_wb7.game.model.GameModel;
+import xw32_wb7.game.msg.IGameOverMsg;
+import common.ICmd2ModelAdapter;
+/**
+ * 
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Dec 11, 2014, 9:18:13 PM
+ */
+public class GameOverMsg implements IGameOverMsg {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 650091016527876105L;
+	
+	
+	private IMixedDataDictionary mdd;
+	
+	/**
+	 * Command algorithm
+	 */
+	private ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd;
+	
+	
+	public GameOverMsg(String winningTeam, UUID gameModelUUID){
+		
+		cmd = new ADataPacketAlgoCmd<ADataPacket, IGameOverMsg, Void>(){
+
+			ICmd2ModelAdapter adapter;
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 3809515132389275090L;
+
+			@Override
+			public ADataPacket apply(Class<?> index,
+					DataPacket<IGameOverMsg> host, Void... params) {
+				mdd = adapter.getMDD();
+				MixedDataKey<GameModel> modelKey = new MixedDataKey<GameModel>(gameModelUUID,"Game model", GameModel.class);
+				
+				((GameModel) mdd.get(modelKey)).gameOver(winningTeam);
+				System.out.print("Goes in the gameover msg");
+				
+				return null;
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				adapter = cmd2ModelAdpt;
+			}
+			
+		};
+	
+	}
+	
+	/**
+	 * Get the command that is need to be added.
+	 */
+	@Override
+	public ADataPacketAlgoCmd<ADataPacket, ?, Void> getCmd() {
+		return cmd;
+	}
+	
+	/**
+	 * Get the class type of the command
+	 */
+	public Class<?> getID() {
+		return this.getClass();
+	}
+	@Override
+	public void ShowGameOver() {
+		
+	}
+
+}

@@ -1,0 +1,5 @@
+package xw32_wb7.server.view;
+
+public interface IServerView2ModelAdpt {
+
+}

@@ -1,0 +1,15 @@
+package xw32_wb7.game.controller;
+
+import xw32_wb7.game.model.GameModel;
+import xw32_wb7.game.view.GameGUI;
+
+public class GameController {
+	
+	private GameModel model;
+	
+	private GameGUI view;
+	
+	public GameController(){
+		
+	}
+}

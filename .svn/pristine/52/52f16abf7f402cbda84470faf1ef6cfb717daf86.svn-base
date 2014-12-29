@@ -1,0 +1,300 @@
+package xw32_wb7.chatroom.view;
+
+
+import gov.nasa.worldwind.geom.Position;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import xw32_wb7.game.element.AllCities;
+import xw32_wb7.game.element.City;
+import xw32_wb7.game.map.MapLayer;
+import xw32_wb7.game.map.MapPanel;
+import xw32_wb7.game.view.IGameView2ModelAdpt;
+import common.IMember;
+
+public class TeamMiniView<T> extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1420484933537515397L;
+	
+	private JPanel contentPane;
+
+	/**
+	 * Game view to model adapter
+	 */
+	private IGameView2ModelAdpt gv2mAdpt;
+	
+	private MenuBar mb;
+	
+	private Menu mf;
+	
+	private MenuItem itemSelect, itemQuit;
+	/**
+	 * Below is the components of team
+	 */
+	private ITeamView2ModelAdapter _teamView2ModelAdpt;
+	private final JPanel pnlWestTeam = new JPanel();
+	private final JLabel lblTeammates = new JLabel("Teammates:");
+	private final JList<T> teammateList = new JList<T>();
+	private final JPanel gamePanel = new JPanel();
+	private final JSplitPane splitPane = new JSplitPane();
+	private final JScrollPane scrollPaneNorthTeam = new JScrollPane();
+	private final JTextArea textAreaInput = new JTextArea();
+	private final JScrollPane scrollPaneSouthTeam = new JScrollPane();
+	private final JTextArea textAreaDisplayText = new JTextArea();
+	private final JPanel panel = new JPanel();
+	private final JButton btnSendText = new JButton("Send text");
+	
+	
+	/**
+	 * Below is the components of game
+	 */
+	private final JPanel pnlNorth = new JPanel();
+	
+	private final JLabel lblMoney = new JLabel("Money:");
+	
+	private final JTextArea moneyTxt = new JTextArea();
+	
+	private final JLabel lblTimeSpent = new JLabel("Time Spent:");
+	
+	private final JTextArea timeSpentTxt = new JTextArea();
+	
+	private final JLabel lblCity = new JLabel("City:");
+	
+	private final JTextArea cityTxt = new JTextArea();
+	private final JLabel lblCurrentTime = new JLabel("Current Time:");
+	private final JTextArea curTimeTxt = new JTextArea();
+	private final JPanel pnlSouth = new JPanel();
+	private final JButton btnStaywork = new JButton("Stay&Work");
+	private final JButton btnMove = new JButton("Let's move!");
+	private final JLabel lblNextDestination = new JLabel("Next destination:");
+	
+	private MapPanel mapPanel;
+	/**
+	 * A list of Place stored in JComboBox
+	 */
+	private JComboBox<City> cities;
+	
+	
+	public TeamMiniView(ITeamView2ModelAdapter _teamView2ModelAdpt) {
+		this._teamView2ModelAdpt = _teamView2ModelAdpt;
+		
+		initGUI();
+	}
+
+	
+	private void initGUI() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 1000, 750);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+		
+		lblTeammates.setMaximumSize(new Dimension(30,10));
+		
+		contentPane.add(pnlWestTeam, BorderLayout.WEST);
+		pnlWestTeam.setLayout(new GridLayout(2, 1, 0, 0));
+		lblTeammates.setVerticalAlignment(SwingConstants.TOP);
+		
+		pnlWestTeam.add(lblTeammates);
+		
+		pnlWestTeam.add(teammateList);
+		
+		
+		gamePanel.add(pnlNorth, BorderLayout.NORTH);
+		
+		
+		pnlNorth.add(lblMoney);
+		moneyTxt.setToolTipText("Money");
+		moneyTxt.setEnabled(false);
+		moneyTxt.setEditable(false);
+		moneyTxt.setColumns(6);
+		
+		pnlNorth.add(moneyTxt);
+		
+		pnlNorth.add(lblCity);
+		cityTxt.setToolTipText("current place");
+		cityTxt.setEnabled(false);
+		cityTxt.setEditable(false);
+		cityTxt.setColumns(10);
+		
+		pnlNorth.add(cityTxt);
+	
+		pnlNorth.add(lblTimeSpent);
+		timeSpentTxt.setToolTipText("Total time spent");
+		timeSpentTxt.setEnabled(false);
+		timeSpentTxt.setEditable(false);
+		timeSpentTxt.setColumns(5);
+		
+		pnlNorth.add(timeSpentTxt);
+		
+		pnlNorth.add(lblCurrentTime);
+		curTimeTxt.setToolTipText("current time");
+		curTimeTxt.setEnabled(false);
+		curTimeTxt.setEditable(false);
+		curTimeTxt.setColumns(6);
+		
+		pnlNorth.add(curTimeTxt);
+		
+		
+		gamePanel.add(pnlSouth, BorderLayout.SOUTH);
+		
+		mapPanel = new MapPanel();
+		mapPanel.start();
+		
+		gamePanel.add(mapPanel, BorderLayout.CENTER);
+		
+		mapPanel.setPreferredSize(new java.awt.Dimension(600, 400));
+		
+		cities = new JComboBox<City>();
+		
+		initCities();
+		
+		pnlSouth.add(lblNextDestination);
+		pnlSouth.add(cities);
+		btnMove.setToolTipText("Rock & Roll");
+		btnMove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+//				_teamView2ModelAdpt.goPlace(cities.getItemAt(cities.getSelectedIndex()));
+//				gv2mAdpt.updateCities(cities.getItemAt(cities.getSelectedIndex()));
+				updateCities(cities.getItemAt(cities.getSelectedIndex()));
+			}
+		});
+		
+		pnlSouth.add(btnMove);
+		
+		
+		btnStaywork.setToolTipText("Making money for further travel cost...");
+		btnStaywork.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(btnStaywork.getText() .equals("Stay&Work")){
+					btnStaywork.setText("Stop&Go");
+					btnStaywork.setToolTipText("Stop working, ready to go.");
+				}else{
+					btnStaywork.setText("Stay&Work");
+					btnStaywork.setToolTipText("Making money for further travel cost...");
+				}
+			}
+		});
+		
+		
+		pnlSouth.add(btnStaywork);
+		
+		
+		contentPane.add(gamePanel, BorderLayout.CENTER);
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		
+		contentPane.add(splitPane, BorderLayout.EAST);
+		
+		splitPane.setLeftComponent(scrollPaneNorthTeam);
+		
+		scrollPaneNorthTeam.setViewportView(textAreaDisplayText);
+	
+		
+		splitPane.setRightComponent(scrollPaneSouthTeam);
+		scrollPaneSouthTeam.setViewportView(textAreaInput);
+		
+		panel.setBackground(Color.CYAN);
+		
+		contentPane.add(panel, BorderLayout.SOUTH);
+		
+		panel.add(btnSendText);
+	}
+
+	/**
+	 * start the mini team view
+	 */
+	public void start() {
+		setVisible(true);
+	}
+	
+	public void append(String s){
+		textAreaDisplayText.setText(textAreaDisplayText.getText() + "\n" + s);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void refreshMemberList(Collection<IMember> memberStubList){
+		teammateList.removeAll();
+		String[] memberStubArray = new String[memberStubList.size()];
+		Iterator<IMember> it = memberStubList.iterator();
+		int i=0;
+		while (it.hasNext()) {
+			try {
+				memberStubArray[i++] = it.next().getName();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		teammateList.setListData((T[]) memberStubArray);
+	}
+	
+	public void setPosition(Position pos)
+	{
+		mapPanel.setPosition(pos, true);
+	}
+
+	public void addMapLayer(MapLayer layer)
+	{
+		mapPanel.addLayer(layer);
+	}
+
+	public void removeMapLayer(MapLayer layer)
+	{
+		mapPanel.removeLayer(layer);
+	}
+
+	public void addCity(City p) {
+		cities.insertItemAt(p, 0);
+		cities.setSelectedIndex(0);
+	}
+	
+	private void initCities(){
+		AllCities ac = new AllCities();
+		List<City> cities = ac.getCities();
+		for(City c: cities){
+			addCity(c);
+		}
+		
+	}
+	public void updateCities(City city){
+		List<City> citiesInfo = city.getNextAvailableCities();
+		cities.removeAllItems();
+		for(City c: citiesInfo){
+			addCity(c);
+		}
+		cities.repaint();
+	}
+	
+	
+	public void setGameView2ModelAdpt(IGameView2ModelAdpt adapter){
+		this.gv2mAdpt = adapter;
+	}
+	
+}

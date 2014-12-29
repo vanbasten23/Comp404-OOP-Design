@@ -1,0 +1,22 @@
+package xw32_wb7.server.view;
+
+import common.IChatroom;
+import common.IPerson;
+
+public interface IServerView2ModelAdpt<TTeamDropListItem, TPersonDropListItem> {
+
+	/**
+	 * create a new team to be passed to the client to join.
+	 * @param teamName The name of the new team.
+	 */
+	public IChatroom createTeam(String teamName);
+	
+	/**
+	 * assign a team from the drop list to the selected person.
+	 * @param team The team to be assigned
+	 * @param personStub The person to be assigned.
+	 */
+	public void assignTeam(IChatroom team, IPerson personStub);
+	
+	public void startGame();
+}

@@ -1,0 +1,9 @@
+package xw32_wb7.server.model;
+
+public interface IServerModel2ViewAdpt {
+
+	public void append(String s);
+
+	public void setRemoteHost(String localAddress);
+
+}

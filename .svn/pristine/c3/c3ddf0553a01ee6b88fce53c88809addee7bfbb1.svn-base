@@ -1,0 +1,129 @@
+package xw32_wb7.chatroom.view;
+
+
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import common.IMember;
+
+import javax.swing.JTextField;
+import java.awt.FlowLayout;
+import javax.swing.BoxLayout;
+import java.awt.CardLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+public class TeamMiniView<T> extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1420484933537515397L;
+	
+	private JPanel contentPane;
+	
+	/**
+	 * Below is the components of team
+	 */
+	private ITeamView2ModelAdapter _teamView2ModelAdpt;
+	private final JPanel pnlWestTeam = new JPanel();
+	private final JLabel lblTeammates = new JLabel("Teammates:");
+	private final JList<T> teammateList = new JList<T>();
+	private final JPanel panel = new JPanel();
+	private final JButton btnSendText = new JButton("Send text");
+	private final JScrollPane scrollPaneTeam = new JScrollPane();
+	private final JTextArea textAreaTeam = new JTextArea();
+	private final JTextField textField = new JTextField();
+	
+	
+	public TeamMiniView(ITeamView2ModelAdapter _teamView2ModelAdpt) {
+		textField.setColumns(20);
+		this._teamView2ModelAdpt = _teamView2ModelAdpt;
+		
+		initGUI();
+	}
+
+	
+	private void initGUI() {
+		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setBounds(100, 100, 1000, 750);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+		
+		lblTeammates.setMaximumSize(new Dimension(100, 24));
+		
+		contentPane.add(pnlWestTeam, BorderLayout.WEST);
+		pnlWestTeam.setLayout(new GridLayout(2, 1, 0, 0));
+		lblTeammates.setVerticalAlignment(SwingConstants.TOP);
+		
+		pnlWestTeam.add(lblTeammates);
+		
+		pnlWestTeam.add(teammateList);
+		
+		panel.setBackground(Color.CYAN);
+		
+		contentPane.add(panel, BorderLayout.SOUTH);
+		
+		panel.add(textField);
+		btnSendText.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				_teamView2ModelAdpt.send(textField.getText());
+			}
+		});
+		
+		panel.add(btnSendText);
+		
+		contentPane.add(scrollPaneTeam, BorderLayout.CENTER);
+		
+		scrollPaneTeam.setViewportView(textAreaTeam);
+	}
+
+	/**
+	 * start the mini team view
+	 */
+	public void start() {
+		setVisible(true);
+	}
+	
+	public void append(String s){
+		textAreaTeam.setText(textAreaTeam.getText() + "\n" + s);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void refreshMemberList(Collection<IMember> memberStubList){
+		teammateList.removeAll();
+		String[] memberStubArray = new String[memberStubList.size()];
+		Iterator<IMember> it = memberStubList.iterator();
+		int i=0;
+		while (it.hasNext()) {
+			try {
+				memberStubArray[i++] = it.next().getName();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		teammateList.setListData((T[]) memberStubArray);
+	}
+	
+	
+}

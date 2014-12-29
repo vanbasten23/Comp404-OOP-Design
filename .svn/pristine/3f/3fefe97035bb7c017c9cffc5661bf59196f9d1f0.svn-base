@@ -1,0 +1,20 @@
+package xw32_wb7.game.view;
+
+import java.io.Serializable;
+
+import xw32_wb7.game.element.City;
+import xw32_wb7.game.element.Transportation;
+
+/**
+ * Game view to model adapter
+ * @author Wenbo Bu, S01216876, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Dec 9, 2014, 2:31:48 PM
+ */
+public interface IGameView2ModelAdpt extends Serializable{
+	public void goLatLong(String latitude, String longitude);
+	
+	public void updateCities(City city);
+	
+	public void goPlace(City c, Transportation t);
+}

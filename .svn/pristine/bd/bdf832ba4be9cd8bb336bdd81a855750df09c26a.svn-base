@@ -1,0 +1,27 @@
+package xw32_wb7.client.model;
+
+import gov.nasa.worldwind.geom.Position;
+
+import java.io.Serializable;
+
+public class Place implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 928355161442906176L;
+	private String   _name;
+	private Position _pos;
+	
+	public Place(String name, Position pos) {
+		_name = name;
+		_pos = pos;
+	}
+	
+	public Position getPosition() {
+		return _pos;
+	}
+	
+	public String toString() {
+		return _name;
+	}
+}

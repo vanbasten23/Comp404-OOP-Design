@@ -1,0 +1,56 @@
+package xw32_wb7.game.controller;
+
+import java.io.Serializable;
+
+import xw32_wb7.game.element.City;
+import xw32_wb7.game.model.GameModel;
+import xw32_wb7.game.model.IGameModel2ViewAdpt;
+import xw32_wb7.game.view.GameGUI;
+import xw32_wb7.game.view.IGameView2ModelAdpt;
+
+public class GameController implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4939777664493848194L;
+
+	private GameModel model;
+	
+	private GameGUI view;
+	
+	public GameController(){
+		model = new GameModel(new IGameModel2ViewAdpt(){
+			
+		});
+		
+		view = new GameGUI(new IGameView2ModelAdpt(){
+
+			@Override
+			public void goLatLong(String latitude, String longitude) {
+				
+			}
+
+			@Override
+			public void goPlace(City c) {
+				
+			}
+
+			@Override
+			public void updateCities(City city) {
+				
+			}
+			
+		});
+	}
+	
+	public void start(){
+		model.start();
+		view.start();
+	}
+	
+	public static void main(String[] args){
+		GameController c = new GameController();
+		c.start();
+	}
+}

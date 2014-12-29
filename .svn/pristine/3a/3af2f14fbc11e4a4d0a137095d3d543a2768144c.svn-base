@@ -1,0 +1,190 @@
+package xw32_wb7.client.controller;
+
+
+import java.awt.EventQueue;
+import java.util.Collection;
+
+import javax.swing.JOptionPane;
+
+import xw32_wb7.chatroom.model.ITeamModel2ViewAdapter;
+import xw32_wb7.chatroom.model.Member;
+import xw32_wb7.chatroom.model.TeamMiniModel;
+import xw32_wb7.chatroom.view.ITeamView2ModelAdapter;
+import xw32_wb7.chatroom.view.LobbyMiniView;
+import xw32_wb7.chatroom.view.TeamMiniView;
+import xw32_wb7.client.model.ClientModel;
+import xw32_wb7.client.model.IClientModel2ViewAdpt;
+import xw32_wb7.client.view.ClientView;
+import xw32_wb7.client.view.IClientView2ModelAdpt;
+import xw32_wb7.game.element.City;
+import xw32_wb7.game.view.IGameView2ModelAdpt;
+import common.IMember;
+
+public class ClientController {
+	
+	/**
+	 * client view
+	 */
+	private ClientView clientView;
+	
+	/**
+	 * client model
+	 */
+	private ClientModel clientModel;
+	
+	public ClientController() {
+		clientView = new ClientView(new IClientView2ModelAdpt() {
+			
+			@Override
+			public String connectTo(String text) {
+				return clientModel.connectTo(text);
+			}
+
+			/**
+			 * quit the app at client side.
+			 */
+			@Override
+			public void quit() {
+				clientModel.stop();
+			}
+
+			@Override
+			public void startGame() {
+				clientModel.startGame();
+			}
+
+		
+		});
+		
+		clientModel = new ClientModel(new IClientModel2ViewAdpt() {
+
+			@Override
+			public void append(String string) {
+				clientView.append(string);
+			}
+
+			@Override
+			public void setRemoteHost(String localAddress) {
+				clientView.setRemoteAddress(localAddress);
+			}
+
+			@Override
+			public ITeamModel2ViewAdapter makeTeamModel2ViewAdapter(
+					TeamMiniModel teamMiniModel) {
+				ITeamView2ModelAdapter _teamView2ModelAdpt = new ITeamView2ModelAdapter() {
+					
+					@Override
+					public void send(String str) {
+						
+					}
+				};
+				
+				
+				TeamMiniView<Member> teamMiniView = clientView.makeMiniTeamView(_teamView2ModelAdpt);
+				
+				ITeamModel2ViewAdapter  _teamModel2ViewAdpt = new ITeamModel2ViewAdapter() {
+					
+					@Override
+					public void start() {
+						teamMiniView.start();
+					}
+					
+					@Override
+					public void refreshMemberList(Collection<IMember> memberStubList) {
+						teamMiniView.refreshMemberList(memberStubList);
+					}
+					
+					@Override
+					public void append(String s) {
+						teamMiniView.append(s);
+					}
+				};
+				
+				IGameView2ModelAdpt gv2mAdpt = new IGameView2ModelAdpt(){
+
+					@Override
+					public void goLatLong(String latitude, String longitude) {
+
+					}
+
+					@Override
+					public void goPlace(City c) {
+					}
+
+					@Override
+					public void updateCities(City city) {
+						
+					}
+					
+				};
+				teamMiniView.setGameView2ModelAdpt(gv2mAdpt);
+				
+				return _teamModel2ViewAdpt;
+			}
+
+			@Override
+			public ITeamModel2ViewAdapter makeTeamModel2LobbyViewAdapter(
+					TeamMiniModel teamMiniModel) {
+				ITeamView2ModelAdapter _lobbyView2ModelAdpt = new ITeamView2ModelAdapter() {
+
+					@Override
+					public void send(String str) {
+
+					}
+				};
+
+
+				LobbyMiniView lobbyMiniView = clientView.makeMiniLobbyView(_lobbyView2ModelAdpt);
+
+				ITeamModel2ViewAdapter  _teamModel2LobbyViewAdpt = new ITeamModel2ViewAdapter() {
+
+					@Override
+					public void start() {
+						lobbyMiniView.start();
+					}
+
+					@Override
+					public void refreshMemberList(Collection<IMember> memberStubList) {
+						lobbyMiniView.refreshMemberList(memberStubList);
+					}
+
+					@Override
+					public void append(String s) {
+						lobbyMiniView.append(s);
+					}
+				};
+				return _teamModel2LobbyViewAdpt;	
+			}
+
+		});
+	}
+	
+	/**
+	 * Start the system up.  The view is started first so that 
+	 * the model can use it to display any status or error messages.
+	 */
+	public void start() {
+		String personName = JOptionPane.showInputDialog("Please input your name.");
+		if (personName.isEmpty()) {
+			personName = "Client: Xiongfei";
+		}
+		clientView.start();
+		clientModel.start(personName);
+	}
+	
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ClientController clientController = new ClientController();
+					clientController.start();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+}

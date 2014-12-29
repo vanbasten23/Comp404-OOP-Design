@@ -1,0 +1,33 @@
+package xw32_wb7.game.element;
+
+import java.io.Serializable;
+/**
+ * A transportation class, used to store transportation information.
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Dec 4, 2014, 12:04:33 AM
+ */
+public abstract class Transportation implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 562733294221725873L;
+
+	public int time;
+	
+	public int price;
+	
+	public String name;
+
+	public Transportation(int time, int price){
+		this.time = time;
+		this.price = price;
+	}
+	
+	@Override 
+	public String toString(){
+		return name;
+	}
+	
+}

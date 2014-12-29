@@ -1,0 +1,79 @@
+package xw32_wb7.chatroom.cmd;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.ADataPacketAlgoCmd;
+import provided.datapacket.DataPacket;
+import xw32_wb7.game.controller.GameFac;
+import xw32_wb7.game.msg.IAroundWorld;
+import common.IAddCmd;
+import common.ICmd2ModelAdapter;
+
+/**
+ * 
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Nov 14, 2014, 8:54:58 AM
+ * 
+ */
+public class AddCmd implements IAddCmd {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4013993353518297018L;
+
+	/**
+	 * Index of the add command
+	 */
+	private Class<?> id;
+
+	/**
+	 * Command algorithm
+	 */
+	private ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd;
+
+	/**
+	 * add the command
+	 * @param ID type
+	 * @param cmd command
+	 */
+	public AddCmd(Class<?> ID, ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd) {
+		this.id = ID;
+		this.cmd = cmd;
+	}
+	
+	public AddCmd(Class<?> ID){
+		this.id = ID;
+		cmd = new ADataPacketAlgoCmd<ADataPacket, IAroundWorld, Void>(){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 3809515132389275090L;
+
+			@Override
+			public ADataPacket apply(Class<?> index,
+					DataPacket<IAroundWorld> host, Void... params) {
+				((GameFac)host.getData()).makeGame();
+				return null;
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				
+			}
+			
+		};
+	}
+
+	@Override
+	public Class<?> getID() {
+		return id;
+	}
+
+	@Override
+	public ADataPacketAlgoCmd<ADataPacket, ?, Void> getCmd() {
+		return cmd;
+	}
+
+}

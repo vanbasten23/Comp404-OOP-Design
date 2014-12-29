@@ -1,0 +1,10 @@
+package xw32_wb7.game.msg;
+/**
+ * Unknown message for a whole game.
+ * @author Wenbo Bu, S01216876, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Dec 2, 2014, 7:46:47 PM
+ */
+public interface IAroundWorld {
+	public void makeGame();
+}

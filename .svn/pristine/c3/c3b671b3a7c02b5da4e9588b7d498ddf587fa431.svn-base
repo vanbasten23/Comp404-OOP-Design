@@ -1,0 +1,57 @@
+package xw32_wb7.game.model;
+
+import java.io.Serializable;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.DataPacket;
+import xw32_wb7.game.element.City;
+import xw32_wb7.game.element.Transportation;
+
+import common.IFailMsg;
+import common.IMember;
+
+public class GameModel implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3418006685812648562L;
+	/**
+	 * Model to view adapter
+	 */
+	private IGameModel2ViewAdpt m2gvAdpt;
+	
+	private IMember serverMember;
+	/**
+	 * Constructor of game model
+	 * @param gameAdpt the model to view adapter
+	 */
+	public GameModel(IGameModel2ViewAdpt gameAdpt, IMember serverMember){
+		this.m2gvAdpt = gameAdpt;
+		this.serverMember = serverMember;
+	}
+	
+	/**
+	 * Start the game model
+	 */
+	public void start(){
+		
+	}
+	
+	public void goPlace(City c, Transportation t){
+		m2gvAdpt.goPlace(c, t);
+	}
+	
+	
+	
+	
+	public ADataPacket sendMsg2Server(DataPacket<?> msg){
+		ADataPacket result;
+		try{
+			result = serverMember.recvMessage(msg);
+		}catch(Exception e){
+			result = new DataPacket<IFailMsg>(IFailMsg.class, null, null);
+		}
+		return result;
+	}
+	
+}

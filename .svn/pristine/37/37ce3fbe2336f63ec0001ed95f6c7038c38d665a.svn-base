@@ -1,0 +1,24 @@
+Documentation
+Comp 404 Final Project
+Group: [xw32, wb7], Xiongfei Wei, Wenbo Bu
+
+Game description:
+Around-the-World-in-80-Days [wb7,xw32]
+ 
+In the background of the novel Around the World in 80 days, starting from England, 
+we set up several prefixed routes that finally leads back to England and all players 
+should follow the prefixed routes. First, each player will be given certain amount of money. 
+From one place to the next destination, the player may choose one kind of transportation 
+(plane, train, bus, etc.) for traveling. For each kind of transportation, there are 
+corresponding prices and time lengths, which will varies according to several factors 
+including season, weather, etc. Some accidents may happen to the player and may 
+have either good or bad effects on them. Team works as follows: within the time 
+limit (15min), only when all the team members in one team arrive at the destination, 
+that team wins. Players have many choices when arriving at a city: move to another 
+city or stop moving and work for some extra money. Team mates can interact with each 
+other within the team, such as one team member can give money to its team mate who 
+falls behind so that he/she can choose faster transportation to catch up sooner.
+ 
+Victory condition: The team with the highest score wins the game. The score will be determined
+on the time and money that each team spend.
+

@@ -1,0 +1,10 @@
+package xw32_wb7.game.view;
+
+import xw32_wb7.game.element.City;
+
+public interface IGameView2ModelAdpt {
+	public void goLatLong(String latitude, String longitude);
+	public void goPlace(City c);
+	
+	public void updateCities(City city);
+}

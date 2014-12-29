@@ -1,0 +1,35 @@
+package xw32_wb7.messagefactory;
+
+
+import provided.datapacket.DataPacket;
+import common.IJoinRoomMsg;
+import common.IMember;
+
+public class JoinRoomMsgFactory implements IMsgFactory<IJoinRoomMsg>{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7132684176261628932L;
+	
+	private IMember myMemberStub;
+	
+	public JoinRoomMsgFactory(IMember myMemberStub) {
+		this.myMemberStub = myMemberStub;
+	}
+
+	@Override
+	public DataPacket<IJoinRoomMsg> makeMsg() {
+		return new DataPacket<IJoinRoomMsg>(IJoinRoomMsg.class, myMemberStub, new IJoinRoomMsg() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 482332132441190496L;
+
+			@Override
+			public IMember getMember() {
+				return myMemberStub;
+			}
+		});
+	}
+}

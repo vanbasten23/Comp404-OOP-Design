@@ -1,0 +1,60 @@
+package xw32_wb7.client.controller;
+
+import gov.nasa.worldwind.geom.Position;
+import xw32_wb7.game.element.City;
+import xw32_wb7.game.model.GameModel;
+import xw32_wb7.game.model.IGameModel2ViewAdpt;
+import xw32_wb7.game.view.GameGUI;
+import xw32_wb7.game.view.IGameView2ModelAdpt;
+import xw32_wb7.client.model.Place;
+
+public class GameController {
+	/**
+	 * Game model, handles operations about games
+	 */
+	private GameModel gameModel;
+	
+	/**
+	 * Game GUI, taking Place as its generic, showing informations about game and map
+	 */
+	private GameGUI<Place> gameView;
+	
+	/**
+	 * Game constructor controller
+	 */
+	public GameController(){
+		gameModel = new GameModel(new IGameModel2ViewAdpt(){
+			
+		});
+		
+		gameView = new GameGUI<Place>(new IGameView2ModelAdpt(){
+
+			@Override
+			public void goLatLong(String latitude, String longitude) {
+				try {
+					gameView.setPosition(Position.fromDegrees(Double.parseDouble(latitude), Double.parseDouble(longitude), 4000));
+				} catch (Exception e) {
+					System.out.println("Improper latitude, longitude: " + latitude + ", " + longitude);
+				}
+			}
+
+			@Override
+			public void goPlace(City c) {
+				gameView.setPosition(c.getPlace().getPosition());
+			
+			}
+
+			@Override
+			public void updateCities(City city) {
+				gameView.updateCities(city);
+			}});
+	}
+	
+	/**
+	 * Start the game controller
+	 */
+	public void start(){
+		gameModel.start();
+		gameView.start();
+	}
+}

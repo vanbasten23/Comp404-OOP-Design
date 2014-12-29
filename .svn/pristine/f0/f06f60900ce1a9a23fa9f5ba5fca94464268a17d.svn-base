@@ -1,0 +1,73 @@
+package common;
+
+import java.awt.Component;
+
+import provided.datapacket.ADataPacket;
+import provided.mixedData.IMixedDataDictionary;
+
+/**
+ * This interface allows the Visitor Commands to access the Client Application Model.
+ */
+public interface ICmd2ModelAdapter {
+
+	/**
+	 * Allows the remotely-sourced message-processing command to access the
+	 * local IMember stub
+	 * 
+	 * @return IMember The local IMember stub
+	 */
+	public abstract IMember getLocalMember();
+	
+	/**
+	 * Displays a text string in the chat message area.
+	 * @param s String to display
+	 */
+	public abstract void displayStringMsg(String s);
+	
+	/**
+	 * Displays a Component in the chat message area (for the
+	 * purpose of displaying non-text messages).
+	 * @param name A name to use when displaying the new component
+	 * @param comp The Component to display.
+	 */
+	public abstract void displayComponentMsg(String name,Component comp);
+	
+	/**
+	 * Add a server-supplied game view component to the local system GUI.
+	 * Note for implementation: some games may require the ability to add
+	 * multiple game components.
+	 * Note for implementation: The Container that Components get added to should be
+	 * resizable so the user can adjust for game views that are too large for the
+	 * supplied Container.
+	 * @param name 	A name to use when displaying the new component
+	 * @param comp The game view Component to display.
+	 */
+	public abstract void addGameComponent(String name,Component comp);
+	
+	/**
+	 * Send a message only to the a given IMember.
+	 * NOTE: This is a void-return method. Any return messages must be processed in the
+	 * client application.
+	 * @param member The IMember stub to send the message to.
+	 * @param msg The message to send.
+	 */
+	public abstract void send2Member(IMember member, ADataPacket msg);
+	
+	/**
+	 * Send a message to the team chatroom.
+	 * NOTE: This is a void-return method. Any return messages must be processed in the
+	 * client application.
+	 * @param msg The message to send.
+	 */
+	public abstract void send2Team(ADataPacket msg);
+	
+	/**
+	 * Gets the MixedDataDictionary from the client application's model that is
+	 * used to store the concrete IGameModule. Allows the Cmd to have access to the
+	 * concretely-typed IGameModule provided by the server so that server-sourced commands
+	 * can call functions implemented in the concrete IGameModule that are not a part of
+	 * the IGameModule interface.
+	 * @return The MMD used to store the IGameModule.
+	 */
+	public abstract IMixedDataDictionary getMDD();
+}

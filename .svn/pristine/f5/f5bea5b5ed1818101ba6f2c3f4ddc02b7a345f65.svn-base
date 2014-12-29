@@ -1,0 +1,103 @@
+Documentation and User's Manual
+Comp 404 Final Project
+Group: [xw32, wb7], Xiongfei Wei, Wenbo Bu
+
+This project contains two parts: client part and server part. The client part enable the client
+to connect to other groups' server and play their games. The server part hold the game and support
+other group and multiple clients to play the game online.
+
+Game description:
+Around-the-World-in-80-Days [wb7,xw32]
+ 
+In the background of the novel Around the World in 80 days, starting from England, 
+we set up several prefixed routes that finally leads back to England and all players 
+should follow the prefixed routes. First, each player will be given certain amount of money. 
+From one place to the next destination, the player may choose one kind of transportation 
+(plane, train, bus, etc.) for traveling. For each kind of transportation, there are 
+corresponding prices and time lengths, which will varies according to several factors 
+including season, weather, etc. Some accidents may happen to the player and may 
+have either good or bad effects on them. Team works as follows: within the time 
+limit (15min), only when all the team members in one team arrive at the destination, 
+that team wins. Players have many choices when arriving at a city: move to another 
+city or stop moving and work for some extra money. Team mates can interact with each 
+other within the team, such as one team member can give money to its team mate who 
+falls behind so that he/she can choose faster transportation to catch up sooner.
+ 
+Victory condition: The team with the highest score wins the game. The score will be determined
+on the time and money that each team spend.
+
+User's manual
+1. Client:
+(1) To start the client program, locate the ClientController.java file under the path:
+FinalProject/src/xw32_wb7.client.controller
+Right click ClientController.java in the file explorer in Eclipse and select "run as->Java Application".
+
+Be sure that you edit launch configuration properties when you first run the program(both for client and server):
+Right click the ClientController.java and select "run as->run configuration...", then under
+the tab "(x)=Arguments", under Working Directory, check Other: and set the working dirctory
+to be "${workspace_loc:FinalProject/bin}". Then under the tab Common, under Save as, check
+Shared file:.
+
+(2) After you start the client program, a JOption panel will pop up, you should input your user name.
+
+(3) To connect to other server, you input the server's IP address in the client GUI, and then click the
+"Connect!" button.
+
+(4) It is the server's reponsibility to send the lobby, the team(both the lobby and the team are chat room that
+support basic chat functionality), and the game.
+
+(5) To quit, click the "Quit" button or press command+q on Mac OS or Ctrl+q on Windows.
+
+2. Server:
+(1) To start the server program, locate the file ServerController.java under the path:
+FinalProject/src/xw32_wb7.server.controller
+Right click the ServerController.java in the file explorer in Eclipse and select "run as->Java Application".
+
+Be sure that you edit the launch configuration properties when you first run the program:
+Right click the ClientController.java and select "run as->run configuration...", then under
+the tab "(x)=Arguments", under Working Directory, check Other: and set the working dirctory
+to be "${workspace_loc:FinalProject/bin}". Then under the tab Common, under Save as, check
+Shared file:
+
+(2) After you start the server program, a server GUI will pop up. Here are the features on the server GUI:
+
+Create team: Server is able to create new teams. The number of the team that a server may create is unlimited.
+To create a team, you need to first input a unique team name and then click "Create Team" button. After you
+click the "Create Team" button, the newly created team will be shown on the second drop list on the server's GUI
+and also the right hand side of the server GUI. 
+
+Assign team to client: Whenever a client connects to the server, the client's name will be shown on the top drop list 
+as well as the left hand side of the server GUI. You may see how many clients have connected to the server and who they 
+are. To assign a client to a team, you need to first select a client from the first drop list and then you need to select 
+a team from the second drop list. Finally, you click "Assign Team" button.
+
+Send the game to all the client and start the game: After all the clients have connected to the server
+and server has assigned every client a team, server may start sending the game that originally resides only on the
+server side to every client and start the game. In order to send the game to all the clients and start the game,
+server should click the "Start Game" button. After the server clicks the "Start Game" button, the game will be sent to 
+all the clients and start the game automatically. All the connected clients, if they follow the common API and 
+write the correct codes, should be able to see the game GUI.
+
+(3) To exit the server program, you simply press command+q on Mac OS or Ctrl+q on Windows.
+
+3. Game
+On the game GUI, you may see such things:
+
+On the top of the game GUI, you may see "current city" which shows which city you are currently stay at, "Money Spent"
+which shows how much money you have left, "Time spent" which shows how many day you have used.
+
+On the left of the game GUI, you may see your personal score and your team score. You may also click the "How to play?"
+button to see the game instruction.
+
+On the bottom of the game GUI, you may select the "Next destination" by selecting the city from the first drop list.
+You may also select what transportation you want to take to get to the next destination from the second drop list.
+You may click "Let's move!" button to move to the next destination. You may click the "Stay&Work" to work at
+the current location and earn some money so that you may afford faster transportation.
+
+Here is the rules of the game: The player needs to try their best to use the least time to get back to their original
+place. The score will be determined based on how much time he/she uses. The player may choose one of the four
+transportations: flight, train, ship, and car. Each transportation corresponds a specific time and price. Flight apparently 
+is the fastest transportation but also the most expensive transportation. If a player does not have enough money,
+he/she has to work at the current position to get some money before he/she can take a transportation. When all the players
+finish the game, the team with the highest score wins the game.
+

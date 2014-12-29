@@ -1,0 +1,21 @@
+package xw32_wb7.game.model;
+
+import java.io.Serializable;
+
+import xw32_wb7.game.element.City;
+import xw32_wb7.game.element.Transportation;
+
+/**
+ * Game model to view adapter
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Dec 9, 2014, 2:29:22 PM
+ */
+public interface IGameModel2ViewAdpt extends Serializable{
+	
+	public void goPlace(City c, Transportation t);
+	
+	public void gameOver(int type, String name);
+	
+	public void localGameOver();
+}

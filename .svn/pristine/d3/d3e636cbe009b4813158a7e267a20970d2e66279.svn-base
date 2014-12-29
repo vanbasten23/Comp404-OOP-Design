@@ -1,0 +1,15 @@
+package xw32_wb7.client.view;
+
+public interface IClientView2ModelAdpt {
+
+	/**
+	 * Connect to function.
+	 * @param text
+	 * @return
+	 */
+	public String connectTo(String text);
+
+	public void quit();
+	
+	
+}

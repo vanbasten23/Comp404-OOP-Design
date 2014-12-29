@@ -1,0 +1,5 @@
+package xw32_wb7.game.msg;
+
+public interface IMoveMsg {
+
+}

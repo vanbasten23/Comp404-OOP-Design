@@ -1,0 +1,180 @@
+package xw32_wb7.server.model;
+
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.ADataPacketAlgoCmd;
+import provided.datapacket.DataPacket;
+import provided.datapacket.DataPacketAlgo;
+import provided.extvisitor.IExtVisitorHost;
+import provided.rmiUtils.IRMIUtils;
+import provided.rmiUtils.IRMI_Defs;
+import provided.rmiUtils.RMIUtils;
+import provided.util.IVoidLambda;
+import xw32_wb7.chatroom.model.IMember2ModelAdpt;
+import xw32_wb7.chatroom.model.Member;
+import xw32_wb7.client.model.IPerson2ModelAdpt;
+import xw32_wb7.client.model.Person;
+import common.IChatroom;
+import common.ICmd2ModelAdapter;
+import common.IJoinRoomMsg;
+import common.IMember;
+import common.IPerson;
+import common.ISuccessMsg;
+
+public class ServerModel {
+
+	/**
+	 * Person to model adapter
+	 */
+	private IPerson2ModelAdpt p2mAdpt;
+	
+	private IServerModel2ViewAdpt m2svAdpt;
+	
+	private IMember2ModelAdpt m2mAdpt;
+	
+	private Registry registry;
+	
+	private String gameName = "Around the world in 80 days";
+	
+	/**
+	 * Stub from local person
+	 */
+	private IPerson localPersonStub;
+	/**
+	 * output command used to put multiple strings up onto the view.
+	 */
+	private IVoidLambda<String> outputCmd = new IVoidLambda<String>() {
+
+		@Override
+		public void apply(String... params) {
+			for (String s : params) {
+				m2svAdpt.append(s + "\n");
+			}
+		}
+	};
+	
+	/**
+	 * The default command is used to handle unknown host.
+	 * Cause all known host will be handled via Id and by other commands.
+	 */
+	private DataPacketAlgo<ADataPacket, Void> algo;
+	private Collection<IPerson> personList;
+	/**
+	 * Factory for the Registry and other uses.
+	 */
+	private IRMIUtils rmiUtils = new RMIUtils(outputCmd);
+	
+	/**
+	 * Local member stub
+	 */
+	private IMember localMemberStub;
+	
+	public ServerModel(IServerModel2ViewAdpt adapter){
+		m2svAdpt = adapter;
+		
+		personList = new ArrayList<IPerson>();
+		
+		m2mAdpt = new IMember2ModelAdpt(){
+
+			@Override
+			public ADataPacket handleMessage(ADataPacket msg) {
+				return msg.execute(algo, null, null);
+			}
+			
+		};
+		IMember member = new Member(gameName, m2mAdpt);
+		IMember serverMemberStub;
+		try{
+			serverMemberStub = (IMember) UnicastRemoteObject.exportObject(member,
+					IPerson.SERVER_BOUND_PORT);
+		}catch(Exception e){
+			serverMemberStub = null;
+			e.printStackTrace();
+		}
+		localMemberStub = serverMemberStub;
+		
+	}
+	public void start(){
+
+		rmiUtils.startRMI(IRMI_Defs.CLASS_SERVER_PORT_SERVER);
+
+		//local person as the rmi client
+		try {
+			m2svAdpt.setRemoteHost(rmiUtils.getLocalAddress()); //Is this stored somewhere?
+			p2mAdpt = new IPerson2ModelAdpt() {
+
+				@Override
+				public void addToPersonList(IPerson personStub) {
+					
+				}
+
+				@Override
+				public void joinTeam(IChatroom team) {
+					
+				}
+
+				@Override
+				public void invite(IPerson requesterStub) {
+					
+				}
+
+				
+
+			};
+			IPerson localPerson = new Person(p2mAdpt, "StubName");//this is the remote person object
+			m2svAdpt.append("Instantiated new local Person: " + localPerson
+					+ "\n");
+			// Use this technique rather than the simpler "registry.rebind(name, engine);"
+			// because it enables us to specify a port number so we can open that port on the firewall
+			localPersonStub = (IPerson) UnicastRemoteObject.exportObject(
+					localPerson, IPerson.SERVER_BOUND_PORT);//server object generates its stub
+			/*first add person(myself) stub to the personStubList. Then add the stub to the drop list on main view*/
+
+			m2svAdpt.append("Looking for registry..." + "\n");
+
+			registry = rmiUtils.getLocalRegistry();
+
+			m2svAdpt.append("Found registry: " + registry + "\n");
+			registry.rebind(IPerson.SERVER_BOUND_NAME, localPersonStub);
+			m2svAdpt.append("Local person as rmi server side bound to "
+					+ IPerson.SERVER_BOUND_NAME + "\n");
+		} catch (Exception e) {
+			System.err.println("Person as rmi server exception:" + "\n");
+			e.printStackTrace();
+			System.exit(-1);
+		}
+		
+		/**
+		 * Default command is used to handle unknown message.
+		 */
+		algo = new DataPacketAlgo<ADataPacket, Void>(new ADataPacketAlgoCmd<ADataPacket, Object, Void>(){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -6235847715608181089L;
+
+			@Override
+			public ADataPacket apply(Class<?> index, DataPacket<Object> host,
+					Void... params) {
+				return null;
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				
+			}
+			
+		});
+		
+		setAllKnownCmd();
+	}
+	
+	public void setAllKnownCmd(){
+		
+	}
+}

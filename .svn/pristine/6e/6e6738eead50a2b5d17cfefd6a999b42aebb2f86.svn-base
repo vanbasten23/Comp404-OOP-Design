@@ -1,0 +1,46 @@
+package xw32_wb7.server.controller;
+
+import xw32_wb7.server.model.IServerModel2ViewAdpt;
+import xw32_wb7.server.model.ServerModel;
+import xw32_wb7.server.view.IServerView2ModelAdpt;
+import xw32_wb7.server.view.ServerGUI;
+
+public class ServerController {
+
+	private ServerModel model;
+	
+	private ServerGUI view;
+	
+	public ServerController(){
+		model = new ServerModel(new IServerModel2ViewAdpt(){
+
+			@Override
+			public void append(String s) {
+				view.append(s);
+			}
+
+			@Override
+			public void setRemoteHost(String ip) {
+				view.append("Connected IP address is " + ip + "\n");
+			}
+			
+		});
+		
+		view = new ServerGUI(new IServerView2ModelAdpt(){
+			
+		});
+	}
+	
+	public static void main(String[] args){
+		ServerController controller = new ServerController();
+		controller.start();
+	}
+	
+	
+	
+	public void start(){
+		model.start();
+		view.start();
+	}
+	
+}

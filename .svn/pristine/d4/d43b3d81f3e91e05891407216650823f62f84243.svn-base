@@ -1,0 +1,5 @@
+package xw32_wb7.game.model;
+
+public interface IGameModel2ViewAdpt {
+
+}

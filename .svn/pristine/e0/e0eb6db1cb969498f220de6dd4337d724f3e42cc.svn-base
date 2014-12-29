@@ -1,0 +1,32 @@
+package xw32_wb7.server.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import xw32_wb7.chatroom.model.Team;
+
+import common.IMember;
+
+public class TeamManager {
+
+	private Team lobby;
+	private List<Team> teams;
+	
+	public TeamManager(){
+		lobby = new Team("Lobby");
+		teams = new ArrayList<Team>();
+	}
+	
+	public void add2Lobby(IMember member){
+		lobby.addMember(member);
+	}
+	
+	public Team getLobby(){
+		return lobby;
+	}
+	
+	public Team getTeamByIdx(int idx){
+		return teams.get(idx);
+	}
+		
+}

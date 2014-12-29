@@ -1,0 +1,59 @@
+package xw32_wb7.game.model;
+
+import xw32_wb7.game.msg.IMoveMsg;
+/**
+ * 
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Dec 10, 2014, 2:54:35 PM
+ */
+public class MoveMsg implements IMoveMsg {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5609109356512690950L;
+	
+	private String cityName;
+	
+	private int price;
+
+	private int time;
+	
+	private double latitude;
+	
+	private double longtitude;
+	
+	
+	public MoveMsg(String name, int price, int time, double lat, double longt){
+		this.cityName = name;
+		this.price = price;
+		this.time = time;
+		this.latitude = lat;
+		this.longtitude = longt;
+	}
+	
+	@Override
+	public String getCurCity() {
+		return cityName;
+	}
+
+	@Override
+	public int getPrice(){
+		return price;
+	}
+	
+	@Override
+	public int getTime(){
+		return time;
+	}
+	
+	public double getLatitude(){
+		return this.latitude;
+	}
+	
+	public double getLongtitude(){
+		return this.longtitude;
+	}
+	
+}

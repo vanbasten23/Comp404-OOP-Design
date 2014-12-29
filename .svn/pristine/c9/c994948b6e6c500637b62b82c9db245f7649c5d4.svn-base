@@ -1,0 +1,63 @@
+package xw32_wb7.chatroom.model;
+
+import java.rmi.RemoteException;
+import java.util.UUID;
+
+import provided.datapacket.ADataPacket;
+import common.IChatroom;
+import common.IMember;
+
+public class Member implements IMember {
+
+	/**
+	 * Random generated UUID
+	 */
+	private UUID uuid;
+
+	private String userName;
+	
+	
+	private IMember2ModelAdpt _member2TeamModelAdpt;
+
+
+	/**
+	 * The chat room that this member belongs to.
+	 */
+	private IChatroom ownChatRoom;
+
+	public Member(String userName, UUID uuid, IMember2ModelAdpt adapter) {//TODO: need to unify the two constructor together.
+		this.userName = userName;
+		this.uuid = uuid;
+		this._member2TeamModelAdpt = adapter;
+	}
+	
+	public IChatroom getOwnChatRoom() {
+		return ownChatRoom;
+	}
+
+	public void setMember2TeamModelAdpt(IMember2ModelAdpt adapter){
+		this._member2TeamModelAdpt = adapter;
+	}
+
+	@Override
+	public String getName() throws RemoteException {
+		return userName;
+	}
+
+	@Override
+	public UUID getUUID() throws RemoteException {
+		return uuid;
+	}
+
+	@Override
+	public ADataPacket recvMessage(ADataPacket msg)
+			throws RemoteException {
+		return _member2TeamModelAdpt.handleMessage(msg);
+	}
+
+	
+	public String toString() {
+		return userName;
+	}
+
+}

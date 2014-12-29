@@ -1,0 +1,77 @@
+package xw32_wb7.chatroom.cmd;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.ADataPacketAlgoCmd;
+import provided.datapacket.DataPacket;
+import provided.mixedData.MixedDataKey;
+import xw32_wb7.game.model.GameModel;
+import xw32_wb7.game.msg.IGameOverMsg;
+
+import common.IAddCmd;
+import common.ICmd2ModelAdapter;
+import common.IFailMsg;
+import common.IMember;
+import common.ISuccessMsg;
+
+/**
+ * 
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Dec 13, 2014, 6:38:30 PM
+ */
+public class GameOverCmd implements IAddCmd{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -9007876847170180920L;
+	
+	private ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd;
+
+	public GameOverCmd(MixedDataKey<GameModel> modelKey,String winningTeam, IMember localMemberStub){
+		cmd = new ADataPacketAlgoCmd<ADataPacket, Object, Void>(){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 8837211927724445937L;
+			
+			private ICmd2ModelAdapter adapter;
+			@Override
+			public ADataPacket apply(Class<?> index,
+					DataPacket<Object> host, Void... params) {
+				ADataPacket result;
+				try{
+					System.out.println("Client has received gameover msg!");
+					
+					((GameModel) adapter.getMDD().get(modelKey)).gameOver(winningTeam);
+					result = new DataPacket<ISuccessMsg>(ISuccessMsg.class, localMemberStub, null);
+				}catch(Exception e){
+					result = new DataPacket<IFailMsg>(IFailMsg.class, localMemberStub, null);
+				}
+				return result;
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(
+					ICmd2ModelAdapter cmd2ModelAdpt) {
+				adapter = cmd2ModelAdpt;
+			}
+			
+		};
+	}
+	
+	@Override
+	public Class<?> getID() {
+		return IGameOverMsg.class;
+	}
+
+	@Override
+	public ADataPacketAlgoCmd<ADataPacket, ?, Void> getCmd() {
+		return cmd;
+	}
+
+	
+	
+
+}

@@ -1,0 +1,30 @@
+package xw32_wb7.game.element;
+
+public class Transportation {
+	private double time;
+	private double price;
+	/**
+	 * @return the time
+	 */
+	public double getTime() {
+		return time;
+	}
+	/**
+	 * @param time the time to set
+	 */
+	public void setTime(double time) {
+		this.time = time;
+	}
+	/**
+	 * @return the price
+	 */
+	public double getPrice() {
+		return price;
+	}
+	/**
+	 * @param price the price to set
+	 */
+	public void setPrice(double price) {
+		this.price = price;
+	}
+}

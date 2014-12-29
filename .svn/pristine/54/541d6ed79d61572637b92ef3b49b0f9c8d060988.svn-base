@@ -1,0 +1,59 @@
+package xw32_wb7.chatroom.view;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import common.IMember;
+
+public class LobbyMiniView extends JFrame {
+
+	private JPanel contentPane;
+	private ITeamView2ModelAdapter _lobbyView2TeamModelAdpt;
+	/**
+	 * Launch the application.
+	 */
+	public void start(){
+		setVisible(true);
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public LobbyMiniView(ITeamView2ModelAdapter _lobbyView2TeamModelAdpt) {
+		this._lobbyView2TeamModelAdpt = _lobbyView2TeamModelAdpt;
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+	}
+
+	public void append(String s){
+//		textAreaDisplayText.setText(textAreaDisplayText.getText() + "\n" + s);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void refreshMemberList(Collection<IMember> memberStubList){
+//		teammateList.removeAll();
+//		String[] memberStubArray = new String[memberStubList.size()];
+//		Iterator<IMember> it = memberStubList.iterator();
+//		int i=0;
+//		while (it.hasNext()) {
+//			try {
+//				memberStubArray[i++] = it.next().getName();
+//			} catch (RemoteException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		teammateList.setListData((T[]) memberStubArray);
+	}
+	
+}

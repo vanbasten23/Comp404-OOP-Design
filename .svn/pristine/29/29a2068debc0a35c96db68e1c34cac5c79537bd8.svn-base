@@ -1,0 +1,50 @@
+package xw32_wb7.server.model;
+
+import java.util.HashMap;
+import java.util.Map;
+
+public class GameManager{
+	
+	
+	Map<String, Integer> scores;
+	
+	private String winningTeam;
+	
+	private int highestScore;
+	
+	public GameManager(){
+		scores = new HashMap<String, Integer>();
+		winningTeam = "";
+		highestScore = 0;
+	}
+	
+	public void addTeam(String teamName){
+		if(!scores.containsKey(teamName)){
+			scores.put(teamName, 0);
+		}
+		
+	}
+	
+	public void addScore2Team(String teamName, int price, int time){
+		int curScore = scores.get(teamName);
+		int timeScore = 10 - time;
+		
+		int addedScore = timeScore;
+		curScore += addedScore;
+		scores.replace(teamName, curScore);
+		
+		if(curScore > highestScore){
+			highestScore = curScore;
+			winningTeam = teamName;
+		}
+	}
+	
+	public String getWinningTeam(){
+		return winningTeam;
+	}
+	
+	
+	public int getScoreByTeamName(String teamName){
+		return scores.get(teamName);
+	}
+}

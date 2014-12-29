@@ -1,0 +1,49 @@
+package xw32_wb7.game.element;
+
+import gov.nasa.worldwind.geom.Position;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import xw32_wb7.client.model.Place;
+
+public class AllCities {
+	private List<City> cities;
+	
+	private final int HEIGHT = 10000;
+	
+	public AllCities(){
+
+		cities = new ArrayList<City>();
+		Place place;
+		City city1, city2, city3;
+		
+		Position nyc  = Position.fromDegrees(40.748974, -73.990288, HEIGHT);
+		place = new Place("NYC", nyc);
+		city1 = new City(place);
+		cities.add(city1);	
+		
+		Position houston = Position.fromDegrees(29.718550, -95.399068, HEIGHT);
+		place = new Place("Houston", houston);
+		city2 = new City(place);
+		cities.add(city2);
+		
+		Position london = Position.fromDegrees(51.503367, -0.119968, HEIGHT);
+		place = new Place("London", london);
+		city3 = new City(place);
+		cities.add(city3);
+		
+		city1.addNextCity(city2);
+		city1.addNextCity(city3);
+		
+		city2.addNextCity(city3);
+		
+		city3.addNextCity(city1);
+	
+	}
+	
+	public List<City> getCities(){
+		return cities;
+	}
+	
+}

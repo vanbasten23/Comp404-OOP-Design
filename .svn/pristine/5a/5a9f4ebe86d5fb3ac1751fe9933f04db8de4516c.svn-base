@@ -1,0 +1,137 @@
+package xw32_wb7.game.element;
+
+import gov.nasa.worldwind.geom.Position;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import xw32_wb7.client.model.Place;
+import xw32_wb7.game.transportation.Drive;
+import xw32_wb7.game.transportation.Flight;
+import xw32_wb7.game.transportation.Ship;
+import xw32_wb7.game.transportation.Train;
+
+public class AllCities {
+	private List<City> cities;
+	
+	private final int HEIGHT = 10000;
+	
+	public AllCities(){
+
+		cities = new ArrayList<City>();
+		Place place;
+		City city1, city2, city3, city4, city5, city6, city7, city8, city9, city10;
+		Transportation ship, flight, drive, train;
+		
+		ship = new Ship();
+		flight = new Flight();
+		drive = new Drive();
+		train = new Train();
+		
+		Position nyc  = Position.fromDegrees(40.748974, -73.990288, HEIGHT);
+		place = new Place("New York", nyc);
+		city1 = new City(place);
+		city1.addTransp(flight);
+		city1.addTransp(train);
+		city1.addTransp(ship);
+		city1.addTransp(drive);
+		cities.add(city1);	
+		
+		Position houston = Position.fromDegrees(29.718550, -95.399068, HEIGHT);
+		place = new Place("Houston", houston);
+		city2 = new City(place);
+		city2.addTransp(flight);
+		city2.addTransp(ship);
+		cities.add(city2);
+		
+		Position london = Position.fromDegrees(51.503367, -0.119968, HEIGHT);
+		place = new Place("London", london);
+		city3 = new City(place);
+		city3.addTransp(flight);
+		city3.addTransp(ship);
+		cities.add(city3);
+		
+		Position beijing = Position.fromDegrees(39.928722, 116.387860, HEIGHT);
+		place = new Place("Beijing", beijing);
+		city4 = new City(place);
+		city4.addTransp(flight);
+		city4.addTransp(ship);
+		city4.addTransp(train);
+		cities.add(city4);
+		
+		Position moscow = Position.fromDegrees(55.749792, 37.632495, HEIGHT);
+		place = new Place("Moscow", moscow);
+		city5 = new City(place);
+		city5.addTransp(train);
+		city5.addTransp(flight);
+		city5.addTransp(drive);
+		cities.add(city5);
+		
+		Position amsterdam = Position.fromDegrees(52.3747158, 4.8986166, HEIGHT);
+		place = new Place("Amsterdam", amsterdam);
+		city6 = new City(place);
+		city6.addTransp(flight);
+		city6.addTransp(train);
+		cities.add(city6);
+		
+		Position paris = Position.fromDegrees(48.8588589, 2.3470599, HEIGHT);
+		place = new Place("Paris", paris);
+		city7 = new City(place);
+		city7.addTransp(flight);
+		city7.addTransp(ship);
+		city7.addTransp(train);
+		cities.add(city7);
+		
+		Position juneau = Position.fromDegrees(58.3844634, -134.1765792, HEIGHT);
+		place = new Place("Juneau", juneau);
+		city8 = new City(place);
+		city8.addTransp(flight);
+		city8.addTransp(ship);
+		cities.add(city8);
+		
+		Position melboune = Position.fromDegrees(-37.8602828, 145.079616, HEIGHT);
+		place = new Place("Melboune", melboune);
+		city9 = new City(place);
+		city9.addTransp(flight);
+		city9.addTransp(ship);
+		cities.add(city9);
+		
+		Position tokyo = Position.fromDegrees(35.673343, 139.710388, HEIGHT);
+		place = new Place("Tokyo",tokyo);
+		city10 = new City(place);
+		city10.addTransp(flight);
+		city10.addTransp(ship);
+		cities.add(city10);
+		
+		city1.addNextCity(city2);
+		city1.addNextCity(city3);
+		
+		city2.addNextCity(city6);
+		city2.addNextCity(city7);
+		
+		city3.addNextCity(city4);
+		city3.addNextCity(city6);
+		
+		city4.addNextCity(city5);
+		
+		city5.addNextCity(city8);
+		
+		city6.addNextCity(city5);
+		city6.addNextCity(city9);
+		
+		city7.addNextCity(city4);
+		city7.addNextCity(city9);
+		
+		city8.addNextCity(city1);
+		city8.addNextCity(city2);
+		
+		city9.addNextCity(city10);
+
+		city10.addNextCity(city5);
+	}
+	
+	public List<City> getCities(){
+		return cities;
+	}
+	
+}

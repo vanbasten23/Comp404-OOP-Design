@@ -1,0 +1,34 @@
+package xw32_wb7.game.model;
+
+import java.io.Serializable;
+
+import common.IMember;
+
+public class GameModel implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3418006685812648562L;
+	/**
+	 * Model to view adapter
+	 */
+	private IGameModel2ViewAdpt m2gvAdpt;
+	
+	private IMember serverMember;
+	/**
+	 * Constructor of game model
+	 * @param gameAdpt the model to view adapter
+	 */
+	public GameModel(IGameModel2ViewAdpt gameAdpt, IMember serverMember){
+		m2gvAdpt = gameAdpt;
+		this.serverMember = serverMember;
+	}
+	
+	/**
+	 * Start the game model
+	 */
+	public void start(){
+		
+	}
+	
+}

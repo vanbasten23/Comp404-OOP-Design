@@ -1,0 +1,122 @@
+package xw32_wb7.chatroom.model;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.UUID;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.DataPacket;
+
+import common.IChatroom;
+import common.IFailMsg;
+import common.IMember;
+
+
+
+public class Team implements IChatroom{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5350480459737123398L;
+
+	private String Name;
+	
+	private UUID uuid = UUID.randomUUID();
+	
+	private Collection<IMember> memberStubList;
+	
+	public Team(String name) {
+		this.Name = name;
+		memberStubList = new ArrayList<IMember>();
+	}
+	
+	@Override
+	public String getName() {
+		return Name;
+	}
+
+	@Override
+	public UUID getUUID() {
+		return uuid;
+	}
+
+	@Override
+	public Collection<IMember> getMembers() {
+		return memberStubList;
+	}
+
+	@Override
+	public void addMembers(Collection<IMember> userstub) {
+		memberStubList.addAll(userstub);
+	}
+
+	@Override
+	public void addMember(IMember member) {
+		memberStubList.add(member);
+	}
+
+	/**
+	* removes user LOCALLY from chatroom object
+	* This method does not do any broadcasting.
+	*/
+	@Override
+	public void removeMember(IMember userstub) {
+		for(IMember m :memberStubList){
+			try {
+				if(m.getUUID().equals(userstub.getUUID())){
+					memberStubList.remove(m);
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	@Override
+	public Collection<ADataPacket> broadcastMsg(ADataPacket msg) {
+		Iterator<IMember> it = memberStubList.iterator();
+		Collection<ADataPacket> returnDataPacketList = new ArrayList<ADataPacket>();
+		while (it.hasNext()) {
+			ADataPacket pac;
+			IMember mem = it.next();
+			try {
+				pac = mem.recvMessage(msg);
+				returnDataPacketList.add(pac);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				pac = new DataPacket<IFailMsg>(IFailMsg.class, mem, new IFailMsg() {
+					
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 2864677635566290486L;
+
+					@Override
+					public String getErrorText() {
+						return "fails to send a msg. RemoteException.";
+					}
+				});
+				returnDataPacketList.add(pac);
+			}
+		}
+		return returnDataPacketList;
+	}
+	
+	public boolean isInTeam(IMember member){
+		for(IMember m: memberStubList){
+			try {
+				if(m.getUUID().equals(member.getUUID())){
+					return true;
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+		
+	}
+}

@@ -1,0 +1,38 @@
+package xw32_wb7.messagefactory;
+
+import common.IMember;
+import common.IRequestCmd;
+import provided.datapacket.DataPacket;
+
+public class RequestAlgoMsgFactory implements IMsgFactory<IRequestCmd> {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2493560719295800011L;
+
+	private Class<?> index;
+	
+	private IMember myMemberStub;
+	
+	public RequestAlgoMsgFactory(Class<?> index, IMember myMemberStub) {
+		this.index = index;
+		this.myMemberStub = myMemberStub;
+	}
+	
+	@Override
+	public DataPacket<IRequestCmd> makeMsg() {
+		return new DataPacket<IRequestCmd>(IRequestCmd.class, myMemberStub, new IRequestCmd() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 7653203709189653754L;
+
+			@Override
+			public Class<?> getID() {
+				return index;
+			}
+		});
+		
+	}
+}

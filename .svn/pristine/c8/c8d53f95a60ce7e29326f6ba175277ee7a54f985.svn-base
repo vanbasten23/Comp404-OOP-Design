@@ -1,0 +1,38 @@
+package xw32_wb7.game.model;
+
+import java.util.Collection;
+
+import xw32_wb7.game.msg.IScoreBoardMsg;
+
+/**
+ * 
+ * @author Wenbo Bu, S01216876, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Dec 14, 2014, 3:17:26 AM
+ */
+public class ScoreBoardMsg implements IScoreBoardMsg {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2851341878412982139L;
+	
+	private Collection<String> playerName;
+	
+	private Collection<Integer> score;
+	
+	public ScoreBoardMsg(Collection<String> playerName, Collection<Integer> score){
+		this.playerName = playerName;
+		this.score = score;
+	}
+	
+	
+	public Collection<String> getPlayName(){
+		return this.playerName;
+	}
+	
+
+	public Collection<Integer> getScore(){
+		return this.score;
+	}
+}

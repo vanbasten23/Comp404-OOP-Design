@@ -1,0 +1,40 @@
+package xw32_wb7.messagefactory;
+
+import provided.datapacket.DataPacket;
+import common.IFailMsg;
+import common.IMember;
+
+public class FailMsgFactory implements IMsgFactory<IFailMsg>{
+
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2705136425862936909L;
+
+	private IMember sender;
+	
+	private String errorText;
+	
+	public FailMsgFactory(IMember sender, String errorText) {
+		this.sender = sender;
+		this.errorText = errorText;
+	}
+	
+	@Override
+	public DataPacket<IFailMsg> makeMsg() {
+		return new DataPacket<IFailMsg>(IFailMsg.class, sender, new IFailMsg() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 7477288283566784844L;
+
+			@Override
+			public String getErrorText() {
+				return errorText;
+			}
+		});
+	}
+
+}

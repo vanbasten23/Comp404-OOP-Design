@@ -1,0 +1,12 @@
+package xw32_wb7.game.msg;
+
+import java.io.Serializable;
+
+public interface IMoveMsg extends Serializable{
+
+	public String getCurCity();
+	
+	public int getTime();
+	
+	public int getPrice();
+}

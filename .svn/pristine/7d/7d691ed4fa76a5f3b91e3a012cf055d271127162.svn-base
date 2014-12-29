@@ -1,0 +1,100 @@
+package xw32_wb7.server.view;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+
+public class ServerGUI extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8180649396761314433L;
+	private JPanel contentPane;
+	/**
+	 * System information displays on this textArea
+	 */
+	
+	private IServerView2ModelAdpt sv2mAdpt;
+	
+	private JTextArea sysInfoTxt;
+
+	/**
+	 * Create the frame.
+	 */
+	public ServerGUI(IServerView2ModelAdpt adapter) {
+		sv2mAdpt = adapter;
+		initGUI();
+	}
+	private void initGUI() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+		
+		JPanel panelNorthServer = new JPanel();
+		contentPane.add(panelNorthServer, BorderLayout.NORTH);
+		
+		JLabel lblGameServerRunning = new JLabel("Game Server Running... Somebody may connect to the server.");
+		panelNorthServer.add(lblGameServerRunning);
+		
+		sysInfoTxt = new JTextArea();
+		sysInfoTxt.setWrapStyleWord(true);
+		sysInfoTxt.setLineWrap(true);
+		sysInfoTxt.setEnabled(false);
+		sysInfoTxt.setEditable(false);
+		
+		sysInfoTxt.setBounds(152, 138, 1, 16);
+		contentPane.add(sysInfoTxt, BorderLayout.CENTER);
+		
+		JPanel panelSouthServer = new JPanel();
+		contentPane.add(panelSouthServer, BorderLayout.SOUTH);
+		
+		JButton btnCreateTeam = new JButton("Create Team");
+		btnCreateTeam.setToolTipText("Click to create a team.");
+		panelSouthServer.add(btnCreateTeam);
+		
+		JComboBox comboBoxPerson = new JComboBox();
+		panelSouthServer.add(comboBoxPerson);
+		
+		JComboBox comboBoxTeam = new JComboBox();
+		panelSouthServer.add(comboBoxTeam);
+		
+		JButton btnAssign = new JButton("Assign");
+		panelSouthServer.add(btnAssign);
+		
+		JPanel panelWestServer = new JPanel();
+		contentPane.add(panelWestServer, BorderLayout.WEST);
+		
+		JList listPerson = new JList();
+		listPerson.setToolTipText("List of  person");
+		listPerson.setVisibleRowCount(10);
+		panelWestServer.add(listPerson);
+		
+		JPanel panel_3 = new JPanel();
+		contentPane.add(panel_3, BorderLayout.EAST);
+		
+		JList listTeam = new JList();
+		listTeam.setToolTipText("List of teams");
+		listTeam.setVisibleRowCount(10);
+		panel_3.add(listTeam);
+	}
+	
+	public void append(String s){
+		sysInfoTxt.append(s);
+		sysInfoTxt.setCaretPosition(sysInfoTxt.getText().length());
+	}
+	public void start(){
+		setVisible(true);
+	}
+
+}

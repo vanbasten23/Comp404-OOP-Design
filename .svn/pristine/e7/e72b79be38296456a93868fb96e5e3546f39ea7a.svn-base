@@ -1,0 +1,257 @@
+package xw32_wb7.game.view;
+
+import gov.nasa.worldwind.geom.Position;
+
+import java.awt.BorderLayout;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+
+import xw32_wb7.game.element.AllCities;
+import xw32_wb7.game.element.City;
+import xw32_wb7.game.map.IRightClickAction;
+import xw32_wb7.game.map.MapLayer;
+import xw32_wb7.game.map.MapPanel;
+/**
+ * 
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Nov 20, 2014, 6:17:52 PM
+ * 
+ * Generic T should be initialized with the type City, which includes Place object.
+ */
+public class GameGUI<T> extends JFrame {
+
+	/**
+	 * Generated serial version UID
+	 */
+	private static final long serialVersionUID = 2619622707248300113L;
+	/**
+	 * Content panel
+	 */
+	private JPanel contentPane;
+	/**
+	 * Game view to model adapter
+	 */
+	private IGameView2ModelAdpt gv2mAdpt;
+	/**
+	 * Map panel, used to display map
+	 */
+	private MapPanel mapPanel;
+	/**
+	 * A list of Place stored in JComboBox
+	 */
+	private JComboBox<City> cities;
+	
+	/**
+	 * Right click action
+	 */
+	private IRightClickAction  rightClick;
+	
+	private MenuBar mb;
+	
+	private Menu mf;
+	
+	private MenuItem itemSelect, itemQuit;
+	
+	private final JPanel pnlNorth = new JPanel();
+	
+	private final JLabel lblMoney = new JLabel("Money:");
+	
+	private final JTextArea moneyTxt = new JTextArea();
+	
+	private final JLabel lblTimeSpent = new JLabel("Time Spent:");
+	
+	private final JTextArea timeSpentTxt = new JTextArea();
+	
+	private final JLabel lblCity = new JLabel("City:");
+	
+	private final JTextArea cityTxt = new JTextArea();
+	private final JLabel lblCurrentTime = new JLabel("Current Time:");
+	private final JTextArea curTimeTxt = new JTextArea();
+	private final JPanel pnlSouth = new JPanel();
+	private final JButton btnStaywork = new JButton("Stay&Work");
+	private final JButton btnMove = new JButton("Let's move!");
+	private final JLabel lblNextDestination = new JLabel("Next destination:");
+
+	/**
+	 * Start the view
+	 */
+	public void start(){
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
+	/**
+	 * Create the frame.
+	 */
+	public GameGUI(IGameView2ModelAdpt adpter) {
+		this.gv2mAdpt = adpter;
+		
+		initGUI();
+	}
+	private void initGUI() {
+		try{
+			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			setBounds(100, 100, 850, 700);
+			contentPane = new JPanel();
+			contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+			contentPane.setLayout(new BorderLayout(0, 0));
+			setContentPane(contentPane);
+			
+			contentPane.add(pnlNorth, BorderLayout.NORTH);
+			
+			mb = new MenuBar();
+			mf = new Menu("File");
+			
+			itemSelect = new MenuItem("Select");
+			itemQuit = new MenuItem("Quit");
+			
+			initMenu();
+			
+			mf.add(itemSelect);
+			mf.addSeparator();
+			mf.add(itemQuit);
+			
+			mb.add(mf);
+			
+			setMenuBar(mb);
+			
+			pnlNorth.add(lblMoney);
+			moneyTxt.setToolTipText("Money");
+			moneyTxt.setEnabled(false);
+			moneyTxt.setEditable(false);
+			moneyTxt.setColumns(6);
+			
+			pnlNorth.add(moneyTxt);
+			
+			pnlNorth.add(lblCity);
+			cityTxt.setToolTipText("current place");
+			cityTxt.setEnabled(false);
+			cityTxt.setEditable(false);
+			cityTxt.setColumns(10);
+			
+			pnlNorth.add(cityTxt);
+		
+			pnlNorth.add(lblTimeSpent);
+			timeSpentTxt.setToolTipText("Total time spent");
+			timeSpentTxt.setEnabled(false);
+			timeSpentTxt.setEditable(false);
+			timeSpentTxt.setColumns(5);
+			
+			pnlNorth.add(timeSpentTxt);
+			
+			pnlNorth.add(lblCurrentTime);
+			curTimeTxt.setToolTipText("current time");
+			curTimeTxt.setEnabled(false);
+			curTimeTxt.setEditable(false);
+			curTimeTxt.setColumns(6);
+			
+			pnlNorth.add(curTimeTxt);
+			
+			contentPane.add(pnlSouth, BorderLayout.SOUTH);
+		
+			mapPanel = new MapPanel();
+			mapPanel.start();
+			contentPane.add(mapPanel, BorderLayout.CENTER);
+			mapPanel.setPreferredSize(new java.awt.Dimension(600, 400));
+			
+			cities = new JComboBox<City>();
+			initCities();
+			
+			pnlSouth.add(lblNextDestination);
+			pnlSouth.add(cities);
+			btnMove.setToolTipText("Rock & Roll");
+			btnMove.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					gv2mAdpt.goPlace(cities.getItemAt(cities.getSelectedIndex()));
+//					gv2mAdpt.updateCities(cities.getItemAt(cities.getSelectedIndex()));
+					updateCities(cities.getItemAt(cities.getSelectedIndex()));
+				}
+			});
+			
+			pnlSouth.add(btnMove);
+			
+			btnStaywork.setToolTipText("Making money for further travel cost...");
+			btnStaywork.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(btnStaywork.getText() .equals("Stay&Work")){
+						btnStaywork.setText("Stop&Go");
+						btnStaywork.setToolTipText("Stop working, ready to go.");
+					}else{
+						btnStaywork.setText("Stay&Work");
+						btnStaywork.setToolTipText("Making money for further travel cost...");
+					}
+				}
+			});
+			
+			
+			pnlSouth.add(btnStaywork);
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+	}
+	
+	private void initCities(){
+		AllCities ac = new AllCities();
+		List<City> cities = ac.getCities();
+		for(City c: cities){
+			addCity(c);
+		}
+		
+	}
+	
+	private void initMenu(){
+		itemQuit.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+			
+		});
+	}
+	
+	public void setPosition(Position pos)
+	{
+		mapPanel.setPosition(pos, true);
+	}
+
+	public void addMapLayer(MapLayer layer)
+	{
+		mapPanel.addLayer(layer);
+	}
+
+	public void removeMapLayer(MapLayer layer)
+	{
+		mapPanel.removeLayer(layer);
+	}
+
+	public void addCity(City p) {
+		cities.insertItemAt(p, 0);
+		cities.setSelectedIndex(0);
+	}
+	
+	public void updateCities(City city){
+		List<City> citiesInfo = city.getNextAvailableCities();
+		cities.removeAllItems();
+		for(City c: citiesInfo){
+			addCity(c);
+		}
+		cities.repaint();
+	}
+	
+	
+}

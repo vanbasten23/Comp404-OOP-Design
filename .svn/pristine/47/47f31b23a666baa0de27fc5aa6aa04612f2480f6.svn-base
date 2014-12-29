@@ -1,0 +1,31 @@
+package xw32_wb7.server.model;
+
+import common.IChatroom;
+import common.IPerson;
+
+public interface IServerModel2ViewAdpt {
+
+	public void append(String s);
+
+	public void setRemoteHost(String localAddress);
+	
+	/**
+	 * add the created team to the team drop list.
+	 * @param team The team object of type IChatroom
+	 */
+	public void addToTeamDropList(IChatroom team);
+	
+	/**
+	 * add the newly connected person to the person list.
+	 * @param personStub The newly connected person to be added to the person drop list.
+	 */
+	public void addToPersonDropList(IPerson personStub);
+
+	/**
+	 * append the newly connect person to the JList on server GUI
+	 * @param personStub
+	 */
+	public void appendToPersonJList(IPerson personStub);
+	
+	public IChatroom getSelectedChatroom();
+}

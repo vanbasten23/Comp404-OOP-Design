@@ -1,0 +1,107 @@
+package xw32_wb7.server.model;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.UUID;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.DataPacket;
+
+import common.IChatroom;
+import common.IFailMsg;
+import common.IMember;
+
+public class Lobby implements IChatroom{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6189089192837842531L;
+	
+	private UUID uuid = UUID.randomUUID();
+	
+	private List<IMember> memberList;
+	
+	private String name;
+	
+	public Lobby(String userName){
+		this.memberList = new ArrayList<IMember>();
+		this.name = userName;
+	}
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public UUID getUUID() {
+		return uuid;
+	}
+
+	@Override
+	public Collection<IMember> getMembers() {
+		return memberList;
+	}
+
+	@Override
+	public void addMembers(Collection<IMember> userstub) {
+		memberList.addAll(userstub);
+	}
+
+	@Override
+	public void addMember(IMember member) {
+		memberList.add(member);
+	}
+
+	@Override
+	public void removeMember(IMember userstub) {
+		for(IMember m :memberList){
+			try {
+				if(m.getUUID().equals(userstub.getUUID())){
+					memberList.remove(m);
+				}
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public Collection<ADataPacket> broadcastMsg(ADataPacket msg) {
+		Iterator<IMember> it = memberList.iterator();
+		Collection<ADataPacket> returnDataPacketList = new ArrayList<ADataPacket>();
+		while (it.hasNext()) {
+			ADataPacket pac;
+			IMember mem = it.next();
+			try {
+				pac = mem.recvMessage(msg);
+				returnDataPacketList.add(pac);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				pac = new DataPacket<IFailMsg>(IFailMsg.class, mem, new IFailMsg() {
+					
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 2864677635566290486L;
+
+					@Override
+					public String getErrorText() {
+						return "fails to send a msg. RemoteException.";
+					}
+				});
+				returnDataPacketList.add(pac);
+			}
+		}
+		return returnDataPacketList;
+	}
+	
+	public String toString(){
+		return getName();
+	}
+	
+}

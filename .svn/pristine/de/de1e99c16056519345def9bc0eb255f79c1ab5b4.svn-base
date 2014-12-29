@@ -1,0 +1,17 @@
+package xw32_wb7.game.msg;
+
+import java.io.Serializable;
+/**
+ * 
+ * @author Wenbo Bu, S01216876, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Dec 14, 2014, 3:17:31 AM
+ */
+public interface IMoveMsg extends Serializable{
+
+	public String getCurCity();
+	
+	public int getTime();
+	
+	public int getPrice();
+}

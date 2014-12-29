@@ -1,0 +1,431 @@
+package xw32_wb7.chatroom.model;
+
+
+
+import java.awt.Component;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.UUID;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.ADataPacketAlgoCmd;
+import provided.datapacket.DataPacket;
+import provided.datapacket.DataPacketAlgo;
+import provided.mixedData.MixedDataDictionary;
+import xw32_wb7.messagefactory.FailMsgFactory;
+import xw32_wb7.messagefactory.IMsgFactory;
+import common.IAddCmd;
+import common.IChatroom;
+import common.ICmd2ModelAdapter;
+import common.IFailMsg;
+import common.IJoinRoomMsg;
+import common.IMember;
+import common.IPerson;
+import common.IRequestCmd;
+import common.ISuccessMsg;
+import common.ITextMsg;
+
+public class TeamMiniModel {
+	
+	/**
+	 * the name of the team
+	 */
+	private String teamName;
+	
+	private IChatroom team;
+	
+	/**
+	 * This is the team mini model to team mini view adapter
+	 */
+	private ITeamModel2ViewAdapter _teamModel2TeamViewAdpt;
+	
+	/**
+	 * algorithm visitor
+	 */
+	private DataPacketAlgo<ADataPacket, Void> algorithmVisitor;
+	
+//	/**
+//	 * algorithm visitor to deal with return message
+//	 */
+//	private DataPacketAlgo<ADataPacket, Void> returnAlgorithmVisitor;
+	
+	/**
+	 * This is the member to team mini model adapter
+	 */
+	private IMember2ModelAdpt _member2TeamModelAdpt = new IMember2ModelAdpt() {
+		
+		@Override
+		public ADataPacket handleMessage(ADataPacket msg) {
+			return msg.execute(algorithmVisitor, null, null);
+		}
+	};
+	
+	
+	/**
+	 * this is the local myMemberStub
+	 */
+	private IMember localMemberStub;
+	
+//	private IRequestCmd requestCmd;
+//	
+//	private IAddCmd addCmd;
+	
+	private ICmd2ModelAdapter _cmd2TeamModelAdapter = new ICmd2ModelAdapter(){
+
+		@Override
+		public IMember getLocalMember() {
+			return localMemberStub;
+		}
+
+		@Override
+		public void displayStringMsg(String s) {
+			_teamModel2TeamViewAdpt.append(s);
+		}
+
+		@Override
+		public void displayComponentMsg(Component comp) {
+			
+		}
+
+		@Override
+		public void addGameComponent(Component comp) {
+			
+		}
+
+		@Override
+		public void send2Member(IMember member, ADataPacket msg) {
+			
+		}
+
+		@Override
+		public void send2Team(ADataPacket msg) {
+			team.broadcastMsg(msg);
+		}
+
+		@Override
+		public MixedDataDictionary getMDD() {
+			return null;
+		}
+		
+	};
+	
+	
+	
+	public TeamMiniModel(IChatroom team, UUID uuid, String userName) {
+		this.team = team;
+		this.teamName = team.getName();
+
+		IMember myMember = new Member(userName, uuid,_member2TeamModelAdpt);
+		try {
+			localMemberStub = (IMember) UnicastRemoteObject.exportObject(myMember, IPerson.CLIENT_BOUND_PORT);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		algorithmVisitor = new DataPacketAlgo<ADataPacket, Void>(new ADataPacketAlgoCmd<ADataPacket, Object, Void>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1373448564877236748L;
+
+			@Override
+			public ADataPacket apply(Class<?> index, DataPacket<Object> host,
+					Void... params) {
+				IMember sender = host.getSender();
+				
+				/*make the requestCmd packet*/
+				ADataPacket requestCmdPacket = new DataPacket<IRequestCmd>(IRequestCmd.class, sender, new IRequestCmd() {
+					
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 460299152554530820L;
+
+					@Override
+					public Class<?> getID() {
+						return index;
+					}
+				});
+				try {
+					/*send the requestCmdPacket to server*/
+					ADataPacket pac = sender.recvMessage(requestCmdPacket);
+					System.out.println("Received unknown message");
+					pac.execute(algorithmVisitor, null, null);//add cmd
+					return host.execute(algorithmVisitor, null, null);//after we add the command, use the new cmd to execute the message
+				} catch (RemoteException e) {
+					e.printStackTrace();
+					FailMsgFactory fac = new FailMsgFactory(sender, "Failed to deal with unknown message");
+					return fac.makeMsg();
+				}
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				
+			}
+		
+		});
+		
+//		returnAlgorithmVisitor = new DataPacketAlgo<ADataPacket, Void>(new ADataPacketAlgoCmd<ADataPacket, Object, Void>() {
+//
+//			@Override
+//			public ADataPacket apply(Class<?> index, DataPacket<Object> host,
+//					Void... params) {
+//				IMember sender = host.getSender();
+//				System.out.println("Unknown return message. index is: "+index);
+//				return null;
+//			}
+//
+//			@Override
+//			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+//				
+//			}
+//		
+//		});
+		/*put other known message algo to visitor*/
+		installKnownMsg2Visitor();
+	}
+	
+	public void setTeamModel2ViewAdapter(ITeamModel2ViewAdapter teamModel2ViewAdpt) {
+		this._teamModel2TeamViewAdpt = teamModel2ViewAdpt;
+	}
+	
+	/**
+	 * Start the mini team view.
+	 */
+	public void start(){
+		_teamModel2TeamViewAdpt.start();//start the team mini view.
+	}
+	
+
+	
+	public void sendTxtMsg(String str) {
+		ADataPacket msgPac = new DataPacket<ITextMsg>(ITextMsg.class, localMemberStub, new ITextMsg() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 5452733996740747394L;
+
+			@Override
+			public String getText() {
+				return str;
+			}
+		});
+		broadcastMsgPacket(msgPac);
+	}
+	
+	public void joinChatRoom() {
+		broadcastMsgPacket(new DataPacket<IJoinRoomMsg>(IJoinRoomMsg.class, localMemberStub, new IJoinRoomMsg() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -1823730245943152017L;
+
+			@Override
+			public IMember getMember() {
+				return localMemberStub;
+			}
+		}));
+		team.addMember(localMemberStub);
+		_teamModel2TeamViewAdpt.refreshMemberList(team.getMembers());
+	}
+	
+	/**
+	 * let the IChatroom team to broadcast, here we just deal with the return message
+	 * @param pac
+	 */
+	public void broadcastMsgPacket(ADataPacket pac) {
+		Collection<ADataPacket> returnPacketList = team.broadcastMsg(pac);
+		Iterator<ADataPacket> it = returnPacketList.iterator();
+		while(it.hasNext()) {
+			ADataPacket retpac = it.next();//retpac = return packet
+			retpac.execute(algorithmVisitor, null,null);//algorithmVisitor or returnAlgoVisitor?
+		}
+	}
+	
+	public Collection<IMember> getMembers() {
+		return team.getMembers();
+	}
+	
+	public IMember getMember() {
+		return localMemberStub;
+	}
+	
+	public void installKnownMsg2Visitor(){
+		algorithmVisitor.setCmd(ITextMsg.class, new ADataPacketAlgoCmd<ADataPacket, ITextMsg, Void>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 861398936596135921L;
+
+			@Override
+			public ADataPacket apply(Class<?> index, DataPacket<ITextMsg> host,
+					Void... params) {
+				String textMsg = (String)(host.getData().getText());
+				try {
+					_cmd2TeamModelAdapter.displayStringMsg(host.getSender().getName()+":"+textMsg+"\n");
+					return new DataPacket<ISuccessMsg>(ISuccessMsg.class, localMemberStub, null);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+					IMsgFactory<IFailMsg> fac = new FailMsgFactory(localMemberStub, "Failed to execute ITextMsg");
+					return fac.makeMsg();
+				}
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				
+			}
+		});
+		
+		algorithmVisitor.setCmd(IJoinRoomMsg.class, new ADataPacketAlgoCmd<ADataPacket, IJoinRoomMsg, Void>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -55383385368078530L;
+
+			@Override
+			public ADataPacket apply(Class<?> index,
+					DataPacket<IJoinRoomMsg> host, Void... params) {
+				try {
+					IMember member = host.getSender();
+					team.addMember(member);
+					_cmd2TeamModelAdapter.displayStringMsg("Member: "+member+" has joined the team.");
+					_teamModel2TeamViewAdpt.refreshMemberList(team.getMembers());
+					return new DataPacket<ISuccessMsg>(ISuccessMsg.class, localMemberStub, null);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					IMsgFactory<IFailMsg> fac = new FailMsgFactory(localMemberStub, "Failed to execute IJoinRoomMsg");
+					return fac.makeMsg();
+				}
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				
+			}
+		});
+		
+		algorithmVisitor.setCmd(IRequestCmd.class, new ADataPacketAlgoCmd<ADataPacket, IRequestCmd, Void>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 2243976597144531438L;
+
+			@Override
+			public ADataPacket apply(Class<?> index,
+					DataPacket<IRequestCmd> host, Void... params) {
+				IMember sender = host.getSender();
+				if (sender == null) {
+					IMsgFactory<IFailMsg> fac = new FailMsgFactory(localMemberStub, "Failed to execute IRequestCmd message because the sender is null.");
+					return fac.makeMsg();
+				}
+				ADataPacket pac = new DataPacket<IAddCmd>(IAddCmd.class, localMemberStub, new IAddCmd() {
+					
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = -5231552199752065407L;
+
+					@Override
+					public Class<?> getID() {
+						return host.getData().getID();
+					}
+					
+					@Override
+					public ADataPacketAlgoCmd<ADataPacket, ?, Void> getCmd() {
+						return (ADataPacketAlgoCmd<ADataPacket, ?, Void>)algorithmVisitor.getCmd(host.getData().getID());
+					}
+				});
+				return pac;
+
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				
+			}
+		});
+		
+		algorithmVisitor.setCmd(IAddCmd.class, new ADataPacketAlgoCmd<ADataPacket, IAddCmd, Void>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 5951481999923173180L;
+
+			@Override
+			public ADataPacket apply(Class<?> index, DataPacket<IAddCmd> host,
+					Void... params) {
+				IAddCmd data = host.getData();
+				if((host.getSender() == null) || (data == null)) {
+					IMsgFactory<IFailMsg> fac = new FailMsgFactory(localMemberStub, 
+							"Failed to execute IAddCmd message because either host.getSender()==null or host.getData()==null");
+					return fac.makeMsg();
+				}
+				data.getCmd().setCmd2ModelAdpt(_cmd2TeamModelAdapter);
+				algorithmVisitor.setCmd(host.getData().getID(), data.getCmd());
+				System.out.println("Unknown msg added, added new cmd:"+data.getCmd().getClass());
+				return new DataPacket<ISuccessMsg>(ISuccessMsg.class, localMemberStub, null);
+
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				
+			}
+			
+		});
+		
+		algorithmVisitor.setCmd(ISuccessMsg.class, new ADataPacketAlgoCmd<ADataPacket, ISuccessMsg, Void>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 4423435475826193870L;
+
+			@Override
+			public ADataPacket apply(Class<?> index,
+					DataPacket<ISuccessMsg> host, Void... params) {
+				System.out.println("message sent successfully");
+				return null;
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				
+			}
+		});
+		
+		algorithmVisitor.setCmd(IFailMsg.class, new ADataPacketAlgoCmd<ADataPacket, IFailMsg, Void>() {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -5400075124082172757L;
+
+			@Override
+			public ADataPacket apply(Class<?> index, DataPacket<IFailMsg> host,
+					Void... params) {
+				System.out.println("Message sent failed, reason:"+host.getData().getErrorText());
+				return null;
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				
+			}
+		
+		});
+	}
+}

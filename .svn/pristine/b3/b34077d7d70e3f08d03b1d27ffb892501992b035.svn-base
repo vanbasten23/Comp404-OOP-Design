@@ -1,0 +1,19 @@
+package xw32_wb7.messagefactory;
+
+import java.io.Serializable;
+
+import provided.datapacket.DataPacket;
+
+/**
+ * This is the factory to make a message
+ * @author xwei
+ *
+ */
+public interface IMsgFactory<T> extends Serializable{
+
+	/**
+	 * make a new message.
+	 * @return
+	 */
+	public DataPacket<T> makeMsg();
+}

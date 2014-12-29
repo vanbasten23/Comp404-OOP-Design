@@ -1,0 +1,13 @@
+package xw32_wb7.server.model;
+
+import xw32_wb7.game.controller.GameFac;
+import xw32_wb7.game.msg.IAroundWorld;
+
+public class GameCmd implements IAroundWorld {
+
+	@Override
+	public GameFac makeGame() {
+		return null;
+	}
+
+}

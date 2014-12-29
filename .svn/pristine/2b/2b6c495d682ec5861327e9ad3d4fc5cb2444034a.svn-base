@@ -1,0 +1,31 @@
+package xw32_wb7.client.model;
+
+
+import common.IChatroom;
+import common.IPerson;
+
+/**
+ * The person to model adapter.
+ * @author xw32,wb7
+ *
+ */
+public interface IPerson2ModelAdpt {
+	
+	/**
+	 * add the person stub to the personStubList in the server Model.
+	 * @param personStub
+	 */
+	public void addToPersonList(IPerson personStub);
+	
+	/**
+	 * join a team miniMVC
+	 * @param chatroom the given chatroom.
+	 */
+	public void joinTeam(IChatroom team);
+	
+	/**
+	 * Invite a person
+	 * @param stub the given person stub.
+	 */
+	public void invite(IPerson requesterStub);
+}

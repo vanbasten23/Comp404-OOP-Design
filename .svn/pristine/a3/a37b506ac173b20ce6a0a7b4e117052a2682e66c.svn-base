@@ -1,0 +1,394 @@
+package xw32_wb7.game.view;
+
+import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.layers.RenderableLayer;
+import gov.nasa.worldwind.render.BasicShapeAttributes;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.Path;
+import gov.nasa.worldwind.render.PointPlacemark;
+import gov.nasa.worldwind.render.ShapeAttributes;
+import gov.nasa.worldwindx.examples.util.DirectedPath;
+
+import java.awt.BorderLayout;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+
+
+//import map.IRightClickAction;
+import map.MapLayer;
+import map.MapPanel;
+import xw32_wb7.game.element.AllCities;
+import xw32_wb7.game.element.City;
+import xw32_wb7.game.element.Transportation;
+
+/**
+ * 
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Nov 20, 2014, 6:17:52 PM
+ * 
+ */
+public class GameGUI extends JFrame  implements Serializable{
+
+	/**
+	 * Generated serial version UID
+	 */
+	private static final long serialVersionUID = 2619622707248300113L;
+	/**
+	 * Content panel
+	 */
+	private JPanel contentPane;
+	/**
+	 * Game view to model adapter
+	 */
+	private IGameView2ModelAdpt gv2mAdpt;
+	/**
+	 * Map panel, used to display map
+	 */
+	private MapPanel mapPanel;
+	/**
+	 * A list of Place stored in JComboBox
+	 */
+	private JComboBox<City> cities;
+	
+	private List<Position> pathPositions;
+	
+	private Path path;
+	
+	private AllCities ac;
+	
+	/**
+	 * Right click action
+	 */
+//	private IRightClickAction  rightClick;
+	
+	private final int GAME_WIN = 1;
+	
+	private final int GAME_LOSE = 0;
+	
+	private RenderableLayer layer;
+	
+	private PointPlacemark pp;
+	
+	private ShapeAttributes attrs;
+	
+	private String gameName = "Around the world in 80 days";
+	
+	private MenuBar mb;
+	
+	private Menu mf;
+	
+	private MenuItem itemSelect, itemQuit;
+	
+	private final JPanel pnlNorth = new JPanel();
+	
+	private final JLabel lblMoney = new JLabel("Money Spent:");
+	
+	private final JTextArea moneyTxt = new JTextArea();
+	
+	private final JLabel lblTimeSpent = new JLabel("Time Spent:");
+	
+	private final JTextArea timeSpentTxt = new JTextArea();
+	
+	private final JLabel lblCity = new JLabel("Current City:");
+	
+	private final JTextArea cityTxt = new JTextArea();
+	private final JPanel pnlSouth = new JPanel();
+	private final JButton btnStaywork = new JButton("Stay&Work");
+	private final JButton btnMove = new JButton("Let's move!");
+	private final JLabel lblNextDestination = new JLabel("Next destination:");
+	private final JLabel lblTransportation = new JLabel("Transportation:");
+	private final JComboBox<Transportation> transportations = new JComboBox<Transportation>();
+	private final JLabel lblDays = new JLabel("days");
+	private final JLabel label = new JLabel("$");
+
+	/**
+	 * Start the view
+	 */
+	public void start(){
+		setLocationRelativeTo(null);
+		setVisible(true);
+	}
+	/**
+	 * Create the frame.
+	 */
+	public GameGUI(IGameView2ModelAdpt adpter) {
+		this.gv2mAdpt = adpter;
+		this.setTitle(gameName);
+		ac = new AllCities();
+		
+		initGameElement();
+		initGUI();
+	}
+	
+	private void initGameElement(){
+		layer = new RenderableLayer();
+		pathPositions = new ArrayList<Position>();
+		attrs = new BasicShapeAttributes();
+		attrs.setOutlineMaterial(Material.YELLOW);
+		attrs.setOutlineWidth(2d);
+	}
+	
+	private void initGUI() {
+		try{
+			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			setBounds(100, 100, 850, 700);
+			contentPane = new JPanel();
+			contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+			contentPane.setLayout(new BorderLayout(0, 0));
+			setContentPane(contentPane);
+			
+			contentPane.add(pnlNorth, BorderLayout.NORTH);
+			
+			mb = new MenuBar();
+			mf = new Menu("File");
+			
+			itemSelect = new MenuItem("Select");
+			itemQuit = new MenuItem("Quit");
+			
+			initMenu();
+			
+			mf.add(itemSelect);
+			mf.addSeparator();
+			mf.add(itemQuit);
+			
+			mb.add(mf);
+			
+			setMenuBar(mb);
+			
+			pnlNorth.add(lblCity);
+			cityTxt.setToolTipText("current place");
+			cityTxt.setEnabled(false);
+			cityTxt.setEditable(false);
+			cityTxt.setColumns(10);
+			
+			
+			pnlNorth.add(cityTxt);
+			
+			pnlNorth.add(lblMoney);
+			
+			pnlNorth.add(label);
+			moneyTxt.setToolTipText("Money");
+			moneyTxt.setText("20000");
+			moneyTxt.setEnabled(false);
+			moneyTxt.setEditable(false);
+			moneyTxt.setColumns(6);
+			
+			pnlNorth.add(moneyTxt);
+		
+			pnlNorth.add(lblTimeSpent);
+			timeSpentTxt.setToolTipText("Total time spent");
+			timeSpentTxt.setText("0");
+			timeSpentTxt.setEnabled(false);
+			timeSpentTxt.setEditable(false);
+			timeSpentTxt.setColumns(5);
+			
+			pnlNorth.add(timeSpentTxt);
+			
+			pnlNorth.add(lblDays);
+			
+			contentPane.add(pnlSouth, BorderLayout.SOUTH);
+		
+			mapPanel = new MapPanel();
+			mapPanel.start();
+			contentPane.add(mapPanel, BorderLayout.CENTER);
+			mapPanel.setPreferredSize(new java.awt.Dimension(600, 400));
+			
+			cities = new JComboBox<City>();
+			initCities();
+			
+			pnlSouth.add(lblNextDestination);
+			pnlSouth.add(cities);
+			btnMove.setToolTipText("Rock & Roll");
+			btnMove.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					gv2mAdpt.goPlace(cities.getItemAt(cities.getSelectedIndex()),
+							transportations.getItemAt(transportations.getSelectedIndex()));
+				}
+			});
+			
+			pnlSouth.add(lblTransportation);
+			
+			pnlSouth.add(transportations);
+			
+			pnlSouth.add(btnMove);
+			
+			btnStaywork.setToolTipText("Making money for further travel cost...");
+			btnStaywork.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if(btnStaywork.getText() .equals("Stay&Work")){
+						btnStaywork.setText("Stop&Go");
+						btnStaywork.setToolTipText("Stop working, ready to go.");
+					}else{
+						btnStaywork.setText("Stay&Work");
+						btnStaywork.setToolTipText("Making money for further travel cost...");
+					}
+				}
+			});
+			
+			
+			pnlSouth.add(btnStaywork);
+			
+			initTransp();
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+	}
+	/**
+	 * Initialize cities for JComboBox
+	 */
+	private void initCities(){
+		List<City> cities = ac.getCities();
+		for(City c: cities){
+			addCity(c);
+		}
+		
+	}
+	
+	private void initTransp(){
+		List<Transportation> trans = cities.getItemAt(cities.getSelectedIndex()).getAvailableTransp(); 
+		for(Transportation t: trans){
+			transportations.addItem(t);
+		}
+	}
+	
+	private void initMenu(){
+		itemQuit.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+			
+		});
+	}
+	
+	public void setPosition(Position pos)
+	{
+		mapPanel.setPosition(pos, true);
+		pp = new PointPlacemark(pos);
+		pathPositions.add(pos);
+		
+		path = new DirectedPath(pathPositions);
+		path.setAttributes(attrs);
+		path.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+        path.setPathType(AVKey.GREAT_CIRCLE);
+		layer.addRenderable(pp);
+		layer.addRenderable(path);
+		mapPanel.addLayer(layer);
+	}
+
+	public void addMapLayer(MapLayer layer)
+	{
+		mapPanel.addLayer(layer);
+	}
+
+	public void removeMapLayer(MapLayer layer)
+	{
+		mapPanel.removeLayer(layer);
+	}
+
+	/**
+	 * Add city to the JComboBox
+	 * @param p
+	 */
+	public void addCity(City p) {
+		cities.insertItemAt(p, 0);
+		cities.setSelectedIndex(0);
+	}
+	
+	/**
+	 * Each time player tries to move on, the travel information is updated, including
+	 * the city and transportation
+	 * @param city
+	 */
+	public void updateTravelInfo(City city){
+		List<City> citiesInfo = city.getNextAvailableCities();
+		List<Transportation> transInfo = city.getAvailableTransp();
+
+		cities.removeAllItems();
+		for(City c: citiesInfo){
+			addCity(c);
+		}
+		cities.repaint();
+		
+		transportations.removeAllItems();
+		for(Transportation t: transInfo){
+			transportations.addItem(t);
+		}
+		transportations.repaint();
+	}
+	
+	
+	@Override 
+	public void repaint(){
+		super.repaint();
+		mapPanel.repaint();
+	}
+	
+	/**
+	 * Set the current city that player is in
+	 * @param city
+	 * 		The city object
+	 */
+	public void setCurrentCity(City city){
+		cityTxt.setText(city.toString());
+	}
+	
+	/**
+	 * Update the city, money information.
+	 * @param t
+	 * 		The transportation type, with which we can update the price and time information.
+	 */
+	public void updateCurrentInfo(Transportation t){
+		int curMoney = Integer.parseInt(moneyTxt.getText());
+		int curTime = Integer.parseInt(timeSpentTxt.getText());
+		
+		curMoney -= t.price;
+		curTime += t.time;
+		
+		moneyTxt.setText("" + curMoney);
+		timeSpentTxt.setText("" + curTime);
+		
+	}
+	
+	/**
+	 * When game over, show up a dialog to inform the player.
+	 * @param type
+	 * 		Whether win or lose.
+	 * @param name
+	 * 		The name of the player, passed from model.
+	 */
+	public void gameOver(int type, String name){
+		if(type == GAME_WIN){
+			JOptionPane.showMessageDialog(null, "Congratulations, " + name +", your team wins the game! \n Good job!");
+		}else if(type == GAME_LOSE){
+			JOptionPane.showMessageDialog(null, "Sorry, " + name +", your team is beaten, come on next time.");
+		}
+		
+		btnMove.setEnabled(false);
+		btnStaywork.setEnabled(false);
+		cities.removeAllItems();
+		transportations.removeAllItems();
+		
+	}
+}

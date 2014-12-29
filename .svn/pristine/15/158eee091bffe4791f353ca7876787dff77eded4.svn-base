@@ -1,0 +1,142 @@
+package xw32_wb7.chatroom.cmd;
+
+import java.rmi.RemoteException;
+import java.util.UUID;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.ADataPacketAlgoCmd;
+import provided.datapacket.DataPacket;
+import provided.mixedData.IMixedDataDictionary;
+import provided.mixedData.MixedDataKey;
+import xw32_wb7.game.controller.GameFac;
+import xw32_wb7.game.model.GameModel;
+import xw32_wb7.game.msg.IAroundWorld;
+import xw32_wb7.game.view.GameGUI;
+import common.IAddCmd;
+import common.ICmd2ModelAdapter;
+
+/**
+ * 
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Nov 14, 2014, 8:54:58 AM
+ * 
+ */
+public class AddCmd implements IAddCmd {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4013993353518297018L;
+
+	/**
+	 * Index of the add command
+	 */
+	private Class<?> id;
+
+	private IMixedDataDictionary mdd;
+	
+	/**
+	 * Command algorithm
+	 */
+	private ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd;
+	
+	
+	private MixedDataKey<GameModel> modelKey;
+	
+	private MixedDataKey<GameGUI> viewKey;
+	
+
+	/**
+	 * add the command
+	 * @param ID type
+	 * @param cmd command
+	 */
+	public AddCmd(Class<?> ID, ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd) {
+		this.id = ID;
+		this.cmd = cmd;
+	}
+	
+	/**
+	 * The constructor for add game command
+	 * @param ID
+	 * 		It should be IAroundWorld.class
+	 */
+	public AddCmd(Class<?> ID, UUID modelUUID){
+		this.id = ID;
+		cmd = new ADataPacketAlgoCmd<ADataPacket, IAroundWorld, Void>(){
+
+			ICmd2ModelAdapter adapter;
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 3809515132389275090L;
+
+			@Override
+			public ADataPacket apply(Class<?> index,
+					DataPacket<IAroundWorld> host, Void... params) {
+				
+				GameFac gf = ((GameFac)host.getData());
+				gf.makeGame();
+				
+				mdd = adapter.getMDD();
+				
+				GameModel model = gf.getController().getGameModel();
+				
+				modelKey = new MixedDataKey<GameModel>(modelUUID, "Game model", GameModel.class);
+				mdd.put(modelKey, model);
+				
+				model.setClientMemberStub(adapter.getLocalMember());
+				try {
+					System.out.println(adapter.getLocalMember().getName());
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+				
+				UUID viewUUID = UUID.randomUUID();
+				viewKey = new MixedDataKey<GameGUI>(viewUUID, "Game view", GameGUI.class);
+				mdd.put(viewKey, gf.getController().getGameView());
+				
+				return null;
+			}
+
+			@Override
+			public void setCmd2ModelAdpt(ICmd2ModelAdapter cmd2ModelAdpt) {
+				adapter = cmd2ModelAdpt;
+			}
+			
+		};
+	}
+	
+	/**
+	 * Get the class type of the command
+	 */
+	@Override
+	public Class<?> getID() {
+		return id;
+	}
+
+	/**
+	 * Get the command that is need to be added.
+	 */
+	@Override
+	public ADataPacketAlgoCmd<ADataPacket, ?, Void> getCmd() {
+		return cmd;
+	}
+
+	/**
+	 * The model mixed data key, used as key to get the model object.
+	 * @return
+	 */
+	public MixedDataKey<GameModel> getModelDictKey(){
+		return modelKey;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public MixedDataKey<GameGUI> getViewDictKey(){
+		return viewKey;
+	}
+}

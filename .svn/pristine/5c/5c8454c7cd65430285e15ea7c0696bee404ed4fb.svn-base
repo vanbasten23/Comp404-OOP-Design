@@ -1,0 +1,30 @@
+package xw32_wb7.messagefactory;
+
+import common.IMember;
+import common.IRequestCmd;
+import provided.datapacket.DataPacket;
+
+public class RequestAlgoMsgFactory implements IMsgFactory<IRequestCmd> {
+
+	private IRequestCmd requestCmd;
+	
+	private Class<?> index;
+	
+	private IMember myMemberStub;
+	
+	public RequestAlgoMsgFactory(Class<?> index, IMember myMemberStub) {
+		this.index = index;
+		this.myMemberStub = myMemberStub;
+	}
+	
+	@Override
+	public DataPacket<IRequestCmd> makeMsg() {
+		return new DataPacket<IRequestCmd>(IRequestCmd.class, myMemberStub, new IRequestCmd() {
+			@Override
+			public Class<?> getID() {
+				return index;
+			}
+		});
+		
+	}
+}

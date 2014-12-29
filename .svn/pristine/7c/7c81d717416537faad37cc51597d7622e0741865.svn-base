@@ -1,0 +1,12 @@
+package xw32_wb7.game.view;
+
+import java.io.Serializable;
+
+import xw32_wb7.game.element.City;
+
+public interface IGameView2ModelAdpt extends Serializable{
+	public void goLatLong(String latitude, String longitude);
+	public void goPlace(City c);
+	
+	public void updateCities(City city);
+}

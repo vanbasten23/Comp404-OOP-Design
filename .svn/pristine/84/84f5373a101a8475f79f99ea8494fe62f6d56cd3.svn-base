@@ -1,0 +1,32 @@
+package xw32_wb7.chatroom.controller;
+
+import xw32_wb7.chatroom.model.Member;
+import xw32_wb7.chatroom.model.TeamMiniModel;
+import xw32_wb7.chatroom.view.ITeamView2ModelAdapter;
+import xw32_wb7.chatroom.view.TeamMiniView;
+import common.IChatroom;
+
+
+public class TeamController {
+	
+	private TeamMiniModel model;
+	
+	private TeamMiniView<Member> view;
+	
+	public TeamController(IChatroom chatroom){
+//		model = new TeamMiniModel(chatroom);//add it back later. Have to comment it otherwise it's an error and I cannot commit.
+		
+		view = new TeamMiniView<Member>(new ITeamView2ModelAdapter(){
+
+			@Override
+			public void send(String str) {
+				
+			}
+			
+		});
+	}
+	
+	public void start(){
+		
+	}
+}

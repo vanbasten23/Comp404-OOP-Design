@@ -1,0 +1,78 @@
+package xw32_wb7.server.controller;
+
+import common.IChatroom;
+import common.IPerson;
+import xw32_wb7.server.model.IServerModel2ViewAdpt;
+import xw32_wb7.server.model.ServerModel;
+import xw32_wb7.server.view.IServerView2ModelAdpt;
+import xw32_wb7.server.view.ServerGUI;
+
+public class ServerController {
+
+	private ServerModel model;
+	
+	private ServerGUI<IChatroom, IPerson> view;
+	
+	public ServerController(){
+		model = new ServerModel(new IServerModel2ViewAdpt(){
+
+			@Override
+			public void append(String s) {
+				view.append(s);
+			}
+
+			@Override
+			public void setRemoteHost(String ip) {
+				view.append("Connected IP address is " + ip + "\n");
+			}
+
+			@Override
+			public void addToTeamDropList(IChatroom team) {
+				view.addToTeamDropList(team);
+			}
+
+			@Override
+			public void addToPersonDropList(IPerson personStub) {
+				view.addToPersonDropList(personStub);
+			}
+
+			@Override
+			public void appendToPersonJList(IPerson personStub) {
+				view.appendToPersonJList(personStub);
+			}
+			
+		});
+		
+		view = new ServerGUI<IChatroom, IPerson>(new IServerView2ModelAdpt<IChatroom, IPerson>(){
+
+			@Override
+			public IChatroom createTeam(String teamName) {
+				return model.createTeam(teamName);
+			}
+
+			@Override
+			public void assignTeam(IChatroom team, IPerson personStub) {
+				model.assignTeam(team, personStub);
+			}
+
+			@Override
+			public void startGame() {
+				model.startGame();
+			}
+			
+		});
+	}
+	
+	public static void main(String[] args){
+		ServerController controller = new ServerController();
+		controller.start();
+	}
+	
+	
+	
+	public void start(){
+		model.start();
+		view.start();
+	}
+	
+}

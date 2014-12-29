@@ -1,0 +1,25 @@
+package xw32_wb7.chatroom.cmd;
+
+import common.IRequestCmd;
+
+public class RequestCmd implements IRequestCmd {
+
+
+	private static final long serialVersionUID = 2418085136856103780L;
+
+	/**
+	 * 
+	 */
+	private Class<?> id;
+
+	
+	public RequestCmd(Class<?> ID) {
+		this.id = ID;
+	}
+
+	@Override
+	public Class<?> getID() {
+		return id;
+	}
+
+}

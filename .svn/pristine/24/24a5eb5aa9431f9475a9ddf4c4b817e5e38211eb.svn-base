@@ -1,0 +1,58 @@
+package xw32_wb7.server.model;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import xw32_wb7.chatroom.model.Team;
+
+import common.IChatroom;
+import common.IMember;
+
+public class TeamManager {
+
+	private IChatroom lobby;
+	private List<IChatroom> teams;
+	
+	public TeamManager(){
+		lobby = new Team("Lobby");
+		teams = new ArrayList<IChatroom>();
+		
+	}
+	
+	public void add2Lobby(IMember member){
+		lobby.addMember(member);
+	}
+	
+	public void add2Teams(IMember member){
+		for(IChatroom c: teams){
+			c.addMember(member);
+		}
+	}
+	
+	public void add2TeamByIdx(IMember member, int idx){
+		teams.get(idx).addMember(member);
+	}
+	
+	public void addTeam(IChatroom team){
+		teams.add(team);
+	}
+	
+	public IChatroom getLobby(){
+		return lobby;
+	}
+	
+	public IChatroom getTeamByIdx(int idx){
+		return teams.get(idx);
+	}
+	
+	public List<IChatroom> getTeams(){
+		return this.teams;
+	}
+	
+	public IChatroom createTeam(String name, IMember serverMember){
+		IChatroom team = new Team(name);
+		team.addMember(serverMember);
+		addTeam(team);
+		return team;
+	}
+}

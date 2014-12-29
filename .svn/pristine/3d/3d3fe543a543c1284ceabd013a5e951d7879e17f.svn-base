@@ -1,0 +1,9 @@
+package xw32_wb7.game.msg;
+
+import java.io.Serializable;
+
+import common.IMember;
+
+public interface ILocalGameOverMsg extends Serializable{
+	public IMember getSender();
+}

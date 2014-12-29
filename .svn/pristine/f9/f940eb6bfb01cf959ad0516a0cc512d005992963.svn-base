@@ -1,0 +1,89 @@
+package xw32_wb7.game.element;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import xw32_wb7.client.model.Place;
+
+public class City{
+	
+	private Place place;
+	private List<City> nextAvailableCities;
+	private List<Transportation> availableTransp;
+	private Weather weather;
+	
+	public City(Place place){
+		this.place = place;
+		nextAvailableCities = new ArrayList<City>();
+		availableTransp = new ArrayList<Transportation>();
+	}
+	
+	/**
+	 * @return the place
+	 */
+	public Place getPlace() {
+		return place;
+	}
+	/**
+	 * @param place the place to set
+	 */
+	public void setPlace(Place place) {
+		this.place = place;
+	}
+	
+	/**
+	 * @return the nextAvailableCities
+	 */
+	public List<City> getNextAvailableCities() {
+		return nextAvailableCities;
+	}
+
+	/**
+	 * @param nextAvailableCities the nextAvailableCities to set
+	 */
+	public void setNextAvailableCities(List<City> nextAvailableCities) {
+		this.nextAvailableCities = nextAvailableCities;
+	}
+
+	public void addNextCity(City city){
+		this.nextAvailableCities.add(city);
+	}
+
+	/**
+	 * @return the availableTransp
+	 */
+	public List<Transportation> getAvailableTransp() {
+		return availableTransp;
+	}
+
+	/**
+	 * @param availableTransp the availableTransp to set
+	 */
+	public void setAvailableTransp(List<Transportation> availableTransp) {
+		this.availableTransp = availableTransp;
+	}
+
+	public void addTransp(Transportation tsp){
+		this.availableTransp.add(tsp);
+	}
+	/**
+	 * @return the weather
+	 */
+	public Weather getWeather() {
+		return weather;
+	}
+
+	/**
+	 * @param weather the weather to set
+	 */
+	public void setWeather(Weather weather) {
+		this.weather = weather;
+	}
+
+	
+	@Override
+	public String toString(){
+		return place.toString();
+	}
+	
+}

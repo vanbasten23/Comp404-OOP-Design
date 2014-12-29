@@ -1,0 +1,22 @@
+package xw32_wb7.game.model;
+
+import xw32_wb7.game.msg.IMoveMsg;
+
+public class MoveMsg implements IMoveMsg {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5609109356512690950L;
+	private String cityName;
+	
+	public MoveMsg(String name){
+		this.cityName = name;
+	}
+	
+	@Override
+	public String getCurCity() {
+		return cityName;
+	}
+	
+}

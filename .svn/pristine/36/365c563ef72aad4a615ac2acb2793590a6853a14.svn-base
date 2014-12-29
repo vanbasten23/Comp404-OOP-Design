@@ -1,0 +1,83 @@
+package xw32_wb7.server.view;
+
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+
+public class ServerGUI extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8180649396761314433L;
+	private JPanel contentPane;
+	/**
+	 * System information displays on this textArea
+	 */
+	
+	private IServerView2ModelAdpt sv2mAdpt;
+	
+	private JTextArea sysInfoTxt;
+
+	/**
+	 * Create the frame.
+	 */
+	public ServerGUI(IServerView2ModelAdpt adapter) {
+		sv2mAdpt = adapter;
+		initGUI();
+	}
+	private void initGUI() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+		
+		JPanel panel = new JPanel();
+		contentPane.add(panel, BorderLayout.NORTH);
+		
+		JLabel lblGameServerRunning = new JLabel("Game Server Running... Somebody may connect to the server.");
+		panel.add(lblGameServerRunning);
+		
+		sysInfoTxt = new JTextArea();
+		sysInfoTxt.setWrapStyleWord(true);
+		sysInfoTxt.setLineWrap(true);
+		sysInfoTxt.setEnabled(false);
+		sysInfoTxt.setEditable(false);
+		
+		sysInfoTxt.setBounds(152, 138, 1, 16);
+		contentPane.add(sysInfoTxt, BorderLayout.CENTER);
+		
+		JPanel panel_1 = new JPanel();
+		contentPane.add(panel_1, BorderLayout.SOUTH);
+		
+		JButton btnCreateTeam = new JButton("Create Team");
+		btnCreateTeam.setToolTipText("Click to create a team.");
+		panel_1.add(btnCreateTeam);
+		
+		JComboBox comboBoxPerson = new JComboBox();
+		panel_1.add(comboBoxPerson);
+		
+		JComboBox comboBoxTeam = new JComboBox();
+		panel_1.add(comboBoxTeam);
+		
+		JButton btnAssign = new JButton("Assign");
+		panel_1.add(btnAssign);
+	}
+	
+	public void append(String s){
+		sysInfoTxt.append(s);
+		sysInfoTxt.setCaretPosition(sysInfoTxt.getText().length());
+	}
+	public void start(){
+		setVisible(true);
+	}
+
+}

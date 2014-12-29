@@ -1,0 +1,8 @@
+package xw32_wb7.server.model;
+
+public class GameManager {
+	
+	private int score;
+	
+	
+}

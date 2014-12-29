@@ -1,0 +1,51 @@
+package xw32_wb7.chatroom.cmd;
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.ADataPacketAlgoCmd;
+import common.IAddCmd;
+
+/**
+ * 
+ * @author Wenbo Bu, Xiongfei Wei, Master of Computer Science
+ * 		   Department of Computer Science, Rice University
+ * @Version Created on Nov 14, 2014, 8:54:58 AM
+ * 
+ */
+public class AddCmd implements IAddCmd {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4013993353518297018L;
+
+	/**
+	 * Index of the add command
+	 */
+	private Class<?> id;
+
+	/**
+	 * Command algorithm
+	 */
+	private ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd;
+
+	/**
+	 * add the command
+	 * @param ID type
+	 * @param cmd command
+	 */
+	public AddCmd(Class<?> ID, ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd) {
+		this.id = ID;
+		this.cmd = cmd;
+	}
+
+	@Override
+	public Class<?> getID() {
+		return id;
+	}
+
+	@Override
+	public ADataPacketAlgoCmd<ADataPacket, ?, Void> getCmd() {
+		return cmd;
+	}
+
+}

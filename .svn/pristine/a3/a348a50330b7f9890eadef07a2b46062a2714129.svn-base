@@ -1,0 +1,215 @@
+package xw32_wb7.server.view;
+
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import xw32_wb7.chatroom.model.Team;
+import xw32_wb7.client.model.Person;
+
+import common.IChatroom;
+import common.IPerson;
+
+public class ServerGUI<TTeamDropListItem, TPersonDropListItem> extends JFrame {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8180649396761314433L;
+	private JPanel contentPane;
+	/**
+	 * System information displays on this textArea
+	 */
+	
+	private IServerView2ModelAdpt<TTeamDropListItem, TPersonDropListItem> sv2mAdpt;
+	
+	private JTextArea sysInfoTxt;
+	private JTextField textFieldTeamName;
+	
+	JComboBox<IPerson> comboBoxPerson;
+	
+	JComboBox<IChatroom> comboBoxTeam;
+	
+	JList<String> listTeam;
+	
+	JList<String> listPerson;
+	
+	DefaultListModel<String> listModelTeamName;
+	
+	DefaultListModel<String> listModelPersonName;
+
+	/**
+	 * Create the frame.
+	 */
+	public ServerGUI(IServerView2ModelAdpt<TTeamDropListItem, TPersonDropListItem> adapter) {
+		sv2mAdpt = adapter;
+		initGUI();
+	}
+	private void initGUI() {
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 450, 300);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setLayout(new BorderLayout(0, 0));
+		setContentPane(contentPane);
+		
+		JPanel panelNorthServer = new JPanel();
+		contentPane.add(panelNorthServer, BorderLayout.NORTH);
+		
+		JLabel lblGameServerRunning = new JLabel("Game Server Running... Somebody may connect to the server.");
+		panelNorthServer.add(lblGameServerRunning);
+		
+		sysInfoTxt = new JTextArea();
+		sysInfoTxt.setWrapStyleWord(true);
+		sysInfoTxt.setLineWrap(true);
+		sysInfoTxt.setEnabled(false);
+		sysInfoTxt.setEditable(false);
+		
+		sysInfoTxt.setBounds(152, 138, 1, 16);
+		contentPane.add(sysInfoTxt, BorderLayout.CENTER);
+		
+		JPanel panelSouthServer = new JPanel();
+		contentPane.add(panelSouthServer, BorderLayout.SOUTH);
+		
+		JPanel panelSouthLeftServer = new JPanel();
+		panelSouthServer.add(panelSouthLeftServer);
+		panelSouthLeftServer.setLayout(new GridLayout(2, 1, 0, 0));
+		
+		textFieldTeamName = new JTextField();
+		textFieldTeamName.setText("Team");
+		textFieldTeamName.setToolTipText("Insert team name here:");
+		panelSouthLeftServer.add(textFieldTeamName);
+		textFieldTeamName.setColumns(10);
+		
+		JButton btnCreateTeam = new JButton("Create Team");
+		panelSouthLeftServer.add(btnCreateTeam);
+		btnCreateTeam.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				/*You have to input a different name other than "Team"*/
+				if (!textFieldTeamName.getText().equals("Team")) {
+					comboBoxTeam.addItem((Team)(sv2mAdpt.createTeam(textFieldTeamName.getText())));//create the team in the model
+					appendToTeamJList(textFieldTeamName.getText());//add the team to the team list in this view
+				}
+				else{
+					sysInfoTxt.append("You have to input a different team name.\n");
+				}
+			}
+		});
+		btnCreateTeam.setToolTipText("Click to create a team.");
+		
+		JPanel panelSouthRightServer = new JPanel();
+		panelSouthServer.add(panelSouthRightServer);
+		panelSouthRightServer.setLayout(new GridLayout(3, 1, 0, 0));
+		
+		comboBoxPerson = new JComboBox<IPerson>();
+		panelSouthRightServer.add(comboBoxPerson);
+		
+		comboBoxTeam = new JComboBox<IChatroom>();
+		panelSouthRightServer.add(comboBoxTeam);
+		
+		JButton btnAssign = new JButton("Assign Team");
+		btnAssign.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				/*get the personStub and team*/
+				 IPerson personStub = comboBoxPerson.getItemAt(comboBoxPerson.getSelectedIndex());
+				 IChatroom team = comboBoxTeam.getItemAt(comboBoxTeam.getSelectedIndex());
+				 
+				 /*If personStub and team exist, assign the person to the team.*/
+				 if (personStub != null && team != null) {
+					 sv2mAdpt.assignTeam(team, personStub);//assign the personStub to the team
+					 comboBoxPerson.removeItem(personStub);//remove the personStub from the comboBox so that the person
+					 									//combo box only display person who has not been assigned a team.
+				 }
+			}
+		});
+		panelSouthRightServer.add(btnAssign);
+		
+		JButton btnStartGame = new JButton("Start Game");
+		btnStartGame.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				sv2mAdpt.startGame();
+			}
+		});
+		panelSouthServer.add(btnStartGame);
+		
+		JPanel panelWestServer = new JPanel();
+		contentPane.add(panelWestServer, BorderLayout.WEST);
+		
+		listModelPersonName = new DefaultListModel<String>();
+		listPerson = new JList<String>(listModelPersonName);
+				
+		listPerson.setToolTipText("List of  person");
+		listPerson.setVisibleRowCount(10);
+		panelWestServer.add(listPerson);
+		
+		JPanel panelEastServer = new JPanel();
+		contentPane.add(panelEastServer, BorderLayout.EAST);
+		
+		listModelTeamName = new DefaultListModel<String>();  
+		listTeam = new JList<String>(listModelTeamName);
+		
+		listTeam.setToolTipText("List of teams");
+		listTeam.setVisibleRowCount(10);
+		panelEastServer.add(listTeam);
+	}
+	
+	public void append(String s){
+		sysInfoTxt.append(s);
+		sysInfoTxt.setCaretPosition(sysInfoTxt.getText().length());
+	}
+	public void start(){
+		setVisible(true);
+	}
+	
+	/**
+	 * add the created team to the team drop list.
+	 * @param team The team object of type IChatroom
+	 */
+	public void addToTeamDropList(IChatroom team){
+		comboBoxTeam.insertItemAt(team, 0);
+	}
+	
+	/**
+	 * add the newly connected person to the person list.
+	 * @param personStub The newly connected person to be added to the person drop list.
+	 */
+	public void addToPersonDropList(IPerson personStub){
+//		comboBoxPerson.addItem(personStub);
+	}
+	
+	/**
+	 * append the name of the newly created team to the team JList.
+	 * @param teamName
+	 */
+	public void appendToTeamJList(String teamName) {
+		listModelTeamName.addElement(teamName);
+	}
+	
+	/**
+	 * append the name of the newly connected person to the person JList
+	 */
+	public void appendToPersonJList(IPerson personStub){
+		try {
+			String personName = personStub.getName();
+			listModelPersonName.addElement(personName);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+}

@@ -1,0 +1,50 @@
+package xw32_wb7.messagefactory;
+
+
+import provided.datapacket.ADataPacket;
+import provided.datapacket.ADataPacketAlgoCmd;
+import provided.datapacket.DataPacket;
+import common.IAddCmd;
+import common.IMember;
+
+public class AddCmdMsgFactory implements IMsgFactory<IAddCmd>{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -926768623001519722L;
+
+	private IMember myMemberStub;
+	
+	private Class<?> index;
+	
+	private ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd;//TODO: WHY is <ADataPacket, ?, ?> ?
+	
+	public AddCmdMsgFactory(IMember myMemberStub,Class<?> index, ADataPacketAlgoCmd<ADataPacket, ?, Void> cmd) {
+		this.myMemberStub = myMemberStub;
+		this.index = index;
+		this.cmd = cmd;
+	}
+	
+	@Override
+	public DataPacket<IAddCmd> makeMsg() {
+		return new DataPacket<IAddCmd>(IAddCmd.class, myMemberStub, new IAddCmd() {
+			
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 3188908811742718492L;
+
+			@Override
+			public Class<?> getID() {
+				return index;
+			}
+			
+			@Override
+			public ADataPacketAlgoCmd<ADataPacket, ?, Void> getCmd() {
+				return cmd;
+			}
+		});
+	}
+
+}

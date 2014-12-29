@@ -1,0 +1,6 @@
+package xw32_wb7.game.element;
+
+public abstract class Weather {
+	
+	public String name;
+}

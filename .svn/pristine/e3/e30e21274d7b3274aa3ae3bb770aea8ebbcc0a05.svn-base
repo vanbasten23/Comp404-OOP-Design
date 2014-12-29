@@ -1,0 +1,19 @@
+package xw32_wb7.client.model;
+
+import xw32_wb7.chatroom.model.ITeamModel2ViewAdapter;
+import xw32_wb7.chatroom.model.TeamMiniModel;
+
+
+public interface IClientModel2ViewAdpt {
+
+	public void append(String string);
+
+	public void setRemoteHost(String localAddress);
+
+	/**
+	 * make the team-mini-model-to-team-mini-view adapter
+	 * @param teamMiniModel
+	 * @return
+	 */
+	public ITeamModel2ViewAdapter makeTeamModel2ViewAdapter(TeamMiniModel teamMiniModel);
+}

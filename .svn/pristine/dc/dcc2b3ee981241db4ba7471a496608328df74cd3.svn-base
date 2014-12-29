@@ -1,0 +1,7 @@
+package xw32_wb7.game.model;
+
+import java.io.Serializable;
+
+public interface IGameModel2ViewAdpt extends Serializable{
+
+}
